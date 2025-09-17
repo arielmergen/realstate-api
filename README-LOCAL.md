@@ -81,7 +81,7 @@ bash ./setup-local.sh
 
 **PASO 2: Configuración del archivo .env**
 ```
-📝 Creando archivo .env...
+�� Creando archivo .env...
 ✅ Archivo .env creado. Por favor configura las credenciales de Cloudinary.
    Edita el archivo .env y actualiza:
    - CLOUDINARY_CLOUD_NAME
@@ -126,20 +126,50 @@ Datasource "db": PostgreSQL database "realstate_db", schema "public" at "postgre
 ```
 *¿Qué hace?* Genera el código para conectar la API con la base de datos
 
-**PASO 7: ¡Completado!**
+**PASO 7: Creación de usuarios por defecto**
+```
+👥 Creando usuarios por defecto...
+🌱 Iniciando seed de usuarios por defecto...
+📋 Creando roles...
+✅ Roles creados/verificados
+👥 Creando usuarios por defecto...
+✅ Usuarios creados/verificados
+
+🎉 ¡Seed completado!
+
+📋 Usuarios disponibles:
+┌─────────────────────────────────────────────────────────┐
+│ ROL        │ EMAIL                    │ PASSWORD        │
+├─────────────────────────────────────────────────────────┤
+│ Guest      │ guest@realstate.com      │ realstate123    │
+│ Executive  │ executive@realstate.com  │ realstate123    │
+│ Admin      │ admin@realstate.com      │ realstate123    │
+│ Owner      │ owner@realstate.com      │ realstate123    │
+└─────────────────────────────────────────────────────────┘
+```
+*¿Qué hace?* Crea 4 usuarios de prueba, uno para cada rol del sistema
+
+**PASO 8: ¡Completado!**
 ```
 ✅ ¡Configuración completada!
 
-🌐 URLs disponibles:
+�� URLs disponibles:
    - API GraphQL: http://localhost:3001/realstate
    - Frontend: http://localhost:3000 (reservado para tu aplicación frontend)
    - Base de datos: localhost:5432
+
+👤 Usuarios disponibles para testing:
+   - Guest:      guest@realstate.com      / realstate123
+   - Executive:  executive@realstate.com  / realstate123
+   - Admin:      admin@realstate.com      / realstate123
+   - Owner:      owner@realstate.com      / realstate123
 
 📋 Comandos útiles:
    - Ver logs: docker-compose logs -f api
    - Parar servicios: docker-compose down
    - Reiniciar API: docker-compose restart api
    - Acceder a base de datos: docker-compose exec postgres psql -U realstate -d realstate_db
+   - Recrear usuarios: docker-compose exec api npm run db:seed
 
 🎉 ¡La API RealState está lista para usar!
 ```
@@ -177,6 +207,7 @@ chmod +x setup-local.sh
 2. **Abre tu navegador** en: http://localhost:3001/realstate
 3. **Deberías ver** una página con documentación de GraphQL
 4. **No debe haber errores** en rojo en la terminal
+5. **Verás la tabla de usuarios** creados automáticamente
 
 #### 🔧 **Comandos de verificación rápida:**
 
@@ -189,6 +220,9 @@ docker-compose logs api
 
 # Probar la API
 curl http://localhost:3001/realstate
+
+# Ver usuarios creados
+docker-compose exec postgres psql -U realstate -d realstate_db -c "SELECT email, \"firstName\", \"lastName\" FROM \"User\";"
 ```
 
 #### 💡 **Tips para desarrolladores junior:**
@@ -198,6 +232,7 @@ curl http://localhost:3001/realstate
 - **Si algo falla**, lee el mensaje de error y sigue las instrucciones
 - **El script es inteligente**: te guía paso a paso
 - **Una vez que funcione**, no necesitas ejecutarlo de nuevo
+- **Tienes usuarios listos** para probar la API inmediatamente
 
 ### Opción 2: Configuración Manual
 ```bash
@@ -210,6 +245,36 @@ docker-compose up -d
 
 # 3. Configurar base de datos
 docker-compose exec api npx prisma migrate dev
+
+# 4. Crear usuarios por defecto
+docker-compose exec api npm run db:seed
+```
+
+## �� **Usuarios por Defecto**
+
+La API viene con **4 usuarios de prueba** listos para usar:
+
+| **Rol** | **Email** | **Password** | **Permisos** |
+|---------|-----------|--------------|--------------|
+| **Guest** | `guest@realstate.com` | `realstate123` | Solo lectura de propiedades públicas |
+| **Executive** | `executive@realstate.com` | `realstate123` | CRUD de propiedades, gestión de contactos |
+| **Admin** | `admin@realstate.com` | `realstate123` | Acceso completo al sistema |
+| **Owner** | `owner@realstate.com` | `realstate123` | Acceso total + gestión de usuarios |
+
+### **¿Cómo usar estos usuarios?**
+
+**1. En GraphQL Playground:**
+- Ve a http://localhost:3001/realstate
+- Usa cualquiera de los emails/passwords de arriba
+
+**2. En tu aplicación frontend:**
+- Usa estos usuarios para hacer login
+- Cada uno tendrá diferentes permisos según su rol
+
+**3. Para recrear usuarios:**
+```bash
+# Si necesitas recrear los usuarios
+docker-compose exec api npm run db:seed
 ```
 
 ## ✅ Verificación
@@ -233,6 +298,9 @@ docker-compose down
 
 # Acceder a base de datos
 docker-compose exec postgres psql -U realstate -d realstate_db
+
+# Recrear usuarios por defecto
+docker-compose exec api npm run db:seed
 ```
 
 ## 🔧 Solución de Problemas
@@ -256,6 +324,15 @@ docker-compose exec api npx prisma migrate reset
 - Verificar credenciales en `.env`
 - Verificar que la cuenta esté activa
 
+### Problemas con usuarios
+```bash
+# Recrear usuarios por defecto
+docker-compose exec api npm run db:seed
+
+# Ver usuarios existentes
+docker-compose exec postgres psql -U realstate -d realstate_db -c "SELECT email, \"firstName\", \"lastName\" FROM \"User\";"
+```
+
 ## 📚 Documentación Completa
 
 Ver `documents/plan-implementacion-local.md` para documentación detallada.
@@ -265,5 +342,5 @@ Ver `documents/plan-implementacion-local.md` para documentación detallada.
 1. Configurar credenciales de Cloudinary
 2. Ejecutar `./setup-local.sh`
 3. Probar la API en http://localhost:3001/realstate
-4. Crear usuario administrador
+4. **¡Usar los usuarios por defecto para probar!**
 5. ¡Comenzar a desarrollar!

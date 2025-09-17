@@ -53,6 +53,10 @@ docker-compose exec api npx prisma migrate dev --name init
 echo "🔧 Generando cliente Prisma..."
 docker-compose exec api npx prisma generate
 
+# Crear usuarios por defecto
+echo "👥 Creando usuarios por defecto..."
+docker-compose exec api npm run db:seed
+
 echo ""
 echo "✅ ¡Configuración completada!"
 echo ""
@@ -61,10 +65,17 @@ echo "   - API GraphQL: http://localhost:3001/realstate"
 echo "   - Frontend: http://localhost:3000 (reservado para tu aplicación frontend)"
 echo "   - Base de datos: localhost:5432"
 echo ""
+echo "👤 Usuarios disponibles para testing:"
+echo "   - Guest:      guest@realstate.com      / realstate123"
+echo "   - Executive:  executive@realstate.com  / realstate123"
+echo "   - Admin:      admin@realstate.com      / realstate123"
+echo "   - Owner:      owner@realstate.com      / realstate123"
+echo ""
 echo "📋 Comandos útiles:"
 echo "   - Ver logs: docker-compose logs -f api"
 echo "   - Parar servicios: docker-compose down"
 echo "   - Reiniciar API: docker-compose restart api"
 echo "   - Acceder a base de datos: docker-compose exec postgres psql -U realstate -d realstate_db"
+echo "   - Recrear usuarios: docker-compose exec api npm run db:seed"
 echo ""
 echo "🎉 ¡La API RealState está lista para usar!"
