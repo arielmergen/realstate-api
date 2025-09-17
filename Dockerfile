@@ -8,18 +8,20 @@ RUN apk add --no-cache python3 make g++
 # Copiar archivos de dependencias
 COPY package*.json ./
 
-# Instalar TODAS las dependencias (incluyendo devDependencies para el seed)
+# Instalar TODAS las dependencias (incluyendo devDependencies para el build)
 RUN npm ci
 
 # Copiar código fuente
 COPY . .
 
-# Generar cliente Prisma
+# Generar cliente Prisma ANTES del build
 RUN npx prisma generate
 
-# Compilar código TypeScript
-RUN npm run build
+# Generar tipos de GraphQL ANTES del build
+RUN npm run graphql:generate
 
+# Compilar código TypeScript (ahora con Prisma y GraphQL generados)
+RUN npm run build
 
 # Crear usuario no-root para seguridad
 RUN addgroup -g 1001 -S nodejs

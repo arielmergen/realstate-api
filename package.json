@@ -13,6 +13,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
+    "graphql:generate": "ts-node src/generator/generate-typings.ts --no-watch",
     "graphql:watch": "ts-node src/generator/generate-typings.ts",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
