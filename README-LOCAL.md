@@ -126,18 +126,64 @@ Datasource "db": PostgreSQL database "realstate_db", schema "public" at "postgre
 ```
 *¿Qué hace?* Genera el código para conectar la API con la base de datos
 
-**PASO 7: Creación de usuarios por defecto**
+**PASO 7: Creación de datos completos del sistema**
 ```
-👥 Creando usuarios por defecto...
-🌱 Iniciando seed de usuarios por defecto...
+👥 Creando datos completos del sistema...
+🌱 Iniciando seed completo de RealState API...
+
 📋 Creando roles...
 ✅ Roles creados/verificados
-👥 Creando usuarios por defecto...
+
+👥 Creando usuarios...
 ✅ Usuarios creados/verificados
 
-🎉 ¡Seed completado!
+⚙️ Creando configuración general...
+✅ Configuración general creada
 
-📋 Usuarios disponibles:
+🏠 Creando tipos de propiedades...
+✅ Tipos de propiedades creados
+
+🏊 Creando amenidades...
+✅ Amenidades creadas
+
+🔧 Creando servicios...
+✅ Servicios creados
+
+🗺️ Creando zonas geográficas...
+✅ Zonas geográficas creadas
+
+🏘️ Creando emprendimientos...
+✅ Emprendimientos creados
+
+🏘️ Creando barrios...
+✅ Barrios creados
+
+👨‍💼 Creando propietarios...
+✅ Propietarios creados
+
+🏠 Creando configuración del home...
+✅ Configuración del home creada
+
+🎉 ¡Seed completo finalizado!
+
+📊 Resumen de datos creados:
+┌─────────────────────────┬─────────┐
+│ Componente              │ Cantidad│
+├─────────────────────────┼─────────┤
+│ Roles                   │ 4       │
+│ Usuarios                │ 4       │
+│ Configuración General   │ 1       │
+│ Tipos de Propiedades    │ 6       │
+│ Amenidades              │ 12      │
+│ Servicios               │ 8       │
+│ Zonas Geográficas       │ 7       │
+│ Emprendimientos         │ 5       │
+│ Barrios                 │ 5       │
+│ Propietarios            │ 4       │
+│ Configuración Home      │ 1       │
+└─────────────────────────┴─────────┘
+
+👤 Usuarios disponibles:
 ┌─────────────────────────────────────────────────────────┐
 │ ROL        │ EMAIL                    │ PASSWORD        │
 ├─────────────────────────────────────────────────────────┤
@@ -147,7 +193,7 @@ Datasource "db": PostgreSQL database "realstate_db", schema "public" at "postgre
 │ Owner      │ owner@realstate.com      │ realstate123    │
 └─────────────────────────────────────────────────────────┘
 ```
-*¿Qué hace?* Crea 4 usuarios de prueba, uno para cada rol del sistema
+*¿Qué hace?* Crea **57+ registros** de datos esenciales: usuarios, roles, catálogos, estructura geográfica, propietarios y configuración completa del sistema
 
 **PASO 8: ¡Completado!**
 ```
@@ -232,7 +278,10 @@ docker-compose exec postgres psql -U realstate -d realstate_db -c "SELECT email,
 - **Si algo falla**, lee el mensaje de error y sigue las instrucciones
 - **El script es inteligente**: te guía paso a paso
 - **Una vez que funcione**, no necesitas ejecutarlo de nuevo
-- **Tienes usuarios listos** para probar la API inmediatamente
+- **Tienes 57+ registros** de datos listos para usar inmediatamente
+- **Puedes crear propiedades** desde el primer momento
+- **Tienes catálogos completos** (tipos, amenidades, servicios)
+- **Estructura geográfica** lista para geolocalizar propiedades
 
 ### Opción 2: Configuración Manual
 ```bash
@@ -275,6 +324,57 @@ La API viene con **4 usuarios de prueba** listos para usar:
 ```bash
 # Si necesitas recrear los usuarios
 docker-compose exec api npm run db:seed
+```
+
+## 📊 **Datos Creados Automáticamente**
+
+La API RealState se inicializa con **57+ registros** de datos esenciales listos para usar:
+
+| **Componente** | **Cantidad** | **Descripción** |
+|----------------|--------------|-----------------|
+| **Roles** | 4 | Guest, Executive, Admin, Owner |
+| **Usuarios** | 4 | Usuarios de prueba con contraseña `realstate123` |
+| **Configuración General** | 1 | Datos de la empresa, redes sociales, contacto |
+| **Tipos de Propiedades** | 6 | Casa, Departamento, Oficina, Local Comercial, Terreno, Cochera |
+| **Amenidades** | 12 | Piscina, Gimnasio, Parque, Seguridad 24hs, Cochera, Balcón, Terraza, Jardín, Sum, Lavadero, Quincho, Sala de Juegos |
+| **Servicios** | 8 | Mantenimiento, Limpieza, Conserjería, Lavandería, Delivery, Vigilancia, Jardinería, Piscina |
+| **Zonas Geográficas** | 7 | Centro, Norte, Sur, Este, Oeste, Zona Norte, Zona Sur |
+| **Emprendimientos** | 5 | Torres del Centro, Residencial Norte, Complejo Sur, Urbanización Este, Barrio Oeste |
+| **Barrios** | 5 | Barrio Centro, Barrio Norte, Barrio Sur, Barrio Este, Barrio Oeste |
+| **Propietarios** | 4 | Propietarios de ejemplo para asignar a propiedades |
+| **Configuración Home** | 1 | Configuración de la página principal |
+
+### **¿Por qué es importante?**
+
+- ✅ **No necesitas configurar** datos base manualmente
+- ✅ **Puedes crear propiedades** inmediatamente
+- ✅ **Tienes catálogos completos** para todas las funcionalidades
+- ✅ **Estructura geográfica** lista para geolocalizar propiedades
+- ✅ **Propietarios disponibles** para asignar a propiedades
+- ✅ **Configuración de empresa** lista para el frontend
+
+### **Verificar datos creados:**
+```bash
+# Ver resumen de todos los datos
+docker-compose exec postgres psql -U realstate -d realstate_db -c "
+SELECT 'Roles' as tabla, count(*) as cantidad FROM \"Role\"
+UNION ALL
+SELECT 'Usuarios', count(*) FROM \"User\"
+UNION ALL
+SELECT 'Tipos de Propiedades', count(*) FROM \"PropertyType\"
+UNION ALL
+SELECT 'Amenidades', count(*) FROM \"Amenity\"
+UNION ALL
+SELECT 'Servicios', count(*) FROM \"Service\"
+UNION ALL
+SELECT 'Zonas', count(*) FROM \"Zone\"
+UNION ALL
+SELECT 'Emprendimientos', count(*) FROM \"Entrepreneurship\"
+UNION ALL
+SELECT 'Barrios', count(*) FROM \"Neighborhood\"
+UNION ALL
+SELECT 'Propietarios', count(*) FROM \"Owner\";
+"
 ```
 
 ## ✅ Verificación
