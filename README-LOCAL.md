@@ -34,34 +34,93 @@ CLOUDINARY_API_SECRET="tu-api-secret"        # ← Pon aquí tu API Secret
 ```
 
 **5. Ejecutar el script de configuración automática**
+
+#### 🎯 **¿Qué es un archivo .sh?**
+Un archivo `.sh` es un **script de Bash** - un programa que ejecuta comandos automáticamente. Es como una receta que le dice a tu computadora exactamente qué hacer paso a paso.
+
+#### 🚀 **Cómo ejecutar el script:**
+
+**Opción A: Desde la terminal (Recomendada)**
 ```bash
+# Dar permisos de ejecución al archivo
+chmod +x setup-local.sh
+
+# Ejecutar el script
 ./setup-local.sh
 ```
 
-#### 🎬 **¿Qué verás al ejecutar `./setup-local.sh`?**
+**Opción B: Si tienes problemas con permisos**
+```bash
+# Ejecutar directamente con bash
+bash setup-local.sh
+```
 
-El script te mostrará algo así:
+**Opción C: En Windows (Git Bash o WSL)**
+```bash
+# Usar bash explícitamente
+bash ./setup-local.sh
+```
 
+#### 🎬 **Paso a Paso: Lo que verás durante la instalación**
+
+**PASO 1: Verificación inicial**
 ```
 🚀 Configurando API RealState para desarrollo local...
 
 ✅ Docker está instalado
-✅ Archivo .env encontrado
-🔨 Construyendo imágenes de Docker...
-   - Descargando PostgreSQL...
-   - Construyendo API RealState...
+✅ Docker Compose está instalado
+```
+*¿Qué hace?* Verifica que tengas Docker instalado (necesario para ejecutar la API)
 
+**PASO 2: Configuración del archivo .env**
+```
+📝 Creando archivo .env...
+✅ Archivo .env creado. Por favor configura las credenciales de Cloudinary.
+   Edita el archivo .env y actualiza:
+   - CLOUDINARY_CLOUD_NAME
+   - CLOUDINARY_API_KEY
+   - CLOUDINARY_API_SECRET
+
+   Puedes obtener estas credenciales en: https://cloudinary.com
+
+¿Has configurado las credenciales de Cloudinary? (y/n):
+```
+*¿Qué hace?* Crea el archivo de configuración y te pregunta si ya configuraste Cloudinary
+
+**PASO 3: Construcción de contenedores**
+```
+🔨 Construyendo contenedores...
+[Líneas de descarga y construcción...]
+```
+*¿Qué hace?* Descarga PostgreSQL y construye la imagen de la API (puede tomar 2-5 minutos)
+
+**PASO 4: Inicio de servicios**
+```
 🚀 Iniciando servicios...
-   - Iniciando base de datos...
-   - Iniciando API...
+Creating realstate-postgres ... done
+Creating realstate-api ... done
+```
+*¿Qué hace?* Inicia la base de datos y la API en contenedores separados
 
-⏳ Esperando a que la base de datos esté lista...
-   - Verificando conexión...
+**PASO 5: Configuración de la base de datos**
+```
+⏳ Esperando a que PostgreSQL esté listo...
+🗄️ Ejecutando migraciones de base de datos...
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "realstate_db", schema "public" at "postgres:5432"
 
-📊 Ejecutando migraciones de base de datos...
-   - Creando tablas...
-   - Configurando datos iniciales...
+✅ Generated Prisma Client (v4.15.0) to ./node_modules/.prisma/client in 2.5s
+```
+*¿Qué hace?* Crea todas las tablas de la base de datos (usuarios, propiedades, etc.)
 
+**PASO 6: Generación del cliente**
+```
+🔧 Generando cliente Prisma...
+```
+*¿Qué hace?* Genera el código para conectar la API con la base de datos
+
+**PASO 7: ¡Completado!**
+```
 ✅ ¡Configuración completada!
 
 🌐 URLs disponibles:
@@ -78,26 +137,60 @@ El script te mostrará algo así:
 🎉 ¡La API RealState está lista para usar!
 ```
 
-#### ⚠️ **Si algo sale mal:**
+#### ⚠️ **Posibles problemas y soluciones:**
+
+**Error: "Permission denied"**
+```bash
+# Solución: Dar permisos de ejecución
+chmod +x setup-local.sh
+./setup-local.sh
+```
 
 **Error: "Docker no está instalado"**
 - Instala Docker Desktop desde https://docker.com
 - Reinicia tu computadora
-- Vuelve a ejecutar `./setup-local.sh`
-
-**Error: "Archivo .env no encontrado"**
-- Asegúrate de haber ejecutado `cp env.example .env`
-- Verifica que estés en la carpeta correcta
+- Vuelve a ejecutar el script
 
 **Error: "Puerto 3001 en uso"**
 - Cierra otras aplicaciones que usen el puerto 3001
 - O cambia el puerto en `docker-compose.yml`
 
-#### ✅ **¿Cómo saber que funcionó?**
+**Error: "Archivo .env no encontrado"**
+- El script lo crea automáticamente
+- Si persiste, ejecuta: `cp env.example .env`
+
+**El script se queda "colgado" en migraciones**
+- Presiona `Ctrl+C` para cancelar
+- Ejecuta: `docker-compose down`
+- Vuelve a ejecutar: `./setup-local.sh`
+
+#### ✅ **¿Cómo saber que funcionó perfectamente?**
 
 1. **Verás el mensaje final**: "🎉 ¡La API RealState está lista para usar!"
 2. **Abre tu navegador** en: http://localhost:3001/realstate
-3. **Deberías ver** la interfaz de GraphQL (página con documentación de la API)
+3. **Deberías ver** una página con documentación de GraphQL
+4. **No debe haber errores** en rojo en la terminal
+
+#### 🔧 **Comandos de verificación rápida:**
+
+```bash
+# Verificar que los contenedores estén corriendo
+docker-compose ps
+
+# Ver logs de la API
+docker-compose logs api
+
+# Probar la API
+curl http://localhost:3001/realstate
+```
+
+#### 💡 **Tips para desarrolladores junior:**
+
+- **Tiempo total**: 5-10 minutos (dependiendo de tu internet)
+- **No cierres la terminal** hasta que termine
+- **Si algo falla**, lee el mensaje de error y sigue las instrucciones
+- **El script es inteligente**: te guía paso a paso
+- **Una vez que funcione**, no necesitas ejecutarlo de nuevo
 
 ### Opción 2: Configuración Manual
 ```bash
