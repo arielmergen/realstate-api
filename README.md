@@ -149,6 +149,9 @@ docker-compose exec api npm run db:seed
 
 # Parar todos los servicios
 docker-compose down
+
+# Limpiar completamente Docker (si hay conflictos)
+./clean-docker.sh
 ```
 
 ## 🤝 **Contribuir**

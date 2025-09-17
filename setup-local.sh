@@ -3,6 +3,33 @@
 # Script de configuración local para API RealState
 echo "🚀 Configurando API RealState para desarrollo local..."
 
+# Función para limpiar solo contenedores específicos de RealState
+clean_realstate_containers() {
+    echo "🧹 Verificando contenedores anteriores de RealState..."
+    
+    # Verificar y eliminar contenedor de PostgreSQL si existe
+    if docker ps -a --format "table {{.Names}}" | grep -q "realstate-postgres"; then
+        echo "   - Eliminando contenedor realstate-postgres existente..."
+        docker container rm -f realstate-postgres 2>/dev/null || true
+    else
+        echo "   - No hay contenedor realstate-postgres existente"
+    fi
+    
+    # Verificar y eliminar contenedor de API si existe
+    if docker ps -a --format "table {{.Names}}" | grep -q "realstate-api"; then
+        echo "   - Eliminando contenedor realstate-api existente..."
+        docker container rm -f realstate-api 2>/dev/null || true
+    else
+        echo "   - No hay contenedor realstate-api existente"
+    fi
+    
+    # Detener servicios de docker-compose si están ejecutándose
+    echo "   - Deteniendo servicios de docker-compose..."
+    docker-compose down -v 2>/dev/null || true
+    
+    echo "✅ Verificación y limpieza completada"
+}
+
 # Verificar que Docker esté instalado
 if ! command -v docker &> /dev/null; then
     echo "❌ Docker no está instalado. Por favor instala Docker primero."
@@ -34,9 +61,8 @@ if [ ! -f .env ]; then
     fi
 fi
 
-# Limpiar contenedores anteriores si existen
-echo "🧹 Limpiando contenedores anteriores..."
-docker-compose down -v 2>/dev/null || true
+# Verificar y limpiar solo contenedores específicos de RealState
+clean_realstate_containers
 
 # Construir y ejecutar contenedores
 echo "🔨 Construyendo contenedores..."
