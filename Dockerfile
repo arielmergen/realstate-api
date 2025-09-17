@@ -14,11 +14,12 @@ RUN npm ci
 # Copiar código fuente
 COPY . .
 
+# Generar cliente Prisma
+RUN npx prisma generate
+
 # Compilar código TypeScript
 RUN npm run build
 
-# Generar cliente Prisma
-RUN npx prisma generate
 
 # Crear usuario no-root para seguridad
 RUN addgroup -g 1001 -S nodejs
