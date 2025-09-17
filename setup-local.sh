@@ -66,10 +66,10 @@ for i in {1..30}; do
     sleep 2
 done
 
-# Ejecutar migraciones
-echo "🗄️  Ejecutando migraciones de base de datos..."
-if ! docker-compose exec api npx prisma migrate dev --name init; then
-    echo "❌ Error ejecutando migraciones"
+# Sincronizar esquema de base de datos (sin crear migraciones)
+echo "🗄️  Sincronizando esquema de base de datos..."
+if ! docker-compose exec api npx prisma db push; then
+    echo "❌ Error sincronizando esquema de base de datos"
     echo "📋 Logs de la API:"
     docker-compose logs api
     exit 1

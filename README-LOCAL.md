@@ -112,13 +112,13 @@ Creating realstate-api ... done
 **PASO 5: Configuración de la base de datos**
 ```
 ⏳ Esperando a que PostgreSQL esté listo...
-🗄️ Ejecutando migraciones de base de datos...
+🗄️ Sincronizando esquema de base de datos...
 Prisma schema loaded from prisma/schema.prisma
 Datasource "db": PostgreSQL database "realstate_db", schema "public" at "postgres:5432"
 
 ✅ Generated Prisma Client (v4.15.0) to ./node_modules/.prisma/client in 2.5s
 ```
-*¿Qué hace?* Crea todas las tablas de la base de datos (usuarios, propiedades, etc.)
+*¿Qué hace?* Sincroniza el esquema con la base de datos (crea tablas sin generar archivos de migración)
 
 **PASO 6: Generación del cliente**
 ```
@@ -293,7 +293,7 @@ cp env.example .env
 docker-compose up -d
 
 # 3. Configurar base de datos
-docker-compose exec api npx prisma migrate dev
+docker-compose exec api npx prisma db push
 
 # 4. Crear usuarios por defecto
 docker-compose exec api npm run db:seed
