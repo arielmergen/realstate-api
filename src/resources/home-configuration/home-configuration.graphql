@@ -1,0 +1,31 @@
+type HomeConfiguration {
+  id: ID
+  slider: Slider
+  grid: Grid
+}
+
+input HomeConfigurationInput {
+  slider: SliderInput
+  grid: GridInput
+}
+
+input UpdateHomeConfigurationInput {
+  slider: UpdateSliderInput
+  grid: UpdateGridInput
+}
+
+type Query {
+  homeConfigurations: [HomeConfiguration]!
+  homeConfiguration(id: ID!): HomeConfiguration
+}
+
+type Mutation {
+  createHomeConfiguration(
+    homeConfigurationInput: HomeConfigurationInput!
+  ): HomeConfiguration!
+  updateHomeConfiguration(
+    id: ID!
+    homeConfigurationInput: UpdateHomeConfigurationInput!
+  ): HomeConfiguration
+  deleteHomeConfiguration(id: ID!): HomeConfiguration
+}

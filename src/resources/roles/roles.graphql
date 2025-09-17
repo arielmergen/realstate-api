@@ -1,0 +1,28 @@
+enum RolesName {
+  Guest
+  Executive
+  Admin
+  Owner
+}
+
+type Role {
+  id: ID
+  name: String!
+  description: String!
+}
+
+input RoleInput {
+  name: String!
+  description: String!
+}
+
+type Query {
+  roles: [Role]!
+  role(id: ID!): Role
+}
+
+type Mutation {
+  createRole(roleInput: RoleInput!): Role!
+  updateRole(roleInput: RoleInput!): Role!
+  deleteRole(id: ID!): Role
+}

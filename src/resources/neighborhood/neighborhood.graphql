@@ -1,0 +1,26 @@
+type Neighborhood {
+  id: ID
+  name: String!
+  tokkoId: String
+  entrepreneurship: Entrepreneurship
+}
+
+input NeighborhoodInput {
+  entrepreneurship: ID!
+  name: String!
+  tokkoId: String
+}
+
+type Query {
+  neighborhoods(associatedEntrepreneurship: ID): [Neighborhood]!
+  neighborhood(id: ID!): Neighborhood
+}
+
+type Mutation {
+  createNeighborhood(neighborhoodInput: NeighborhoodInput!): Neighborhood!
+  updateNeighborhood(
+    id: ID!
+    neighborhoodInput: NeighborhoodInput!
+  ): Neighborhood!
+  deleteNeighborhood(id: ID!): Neighborhood
+}

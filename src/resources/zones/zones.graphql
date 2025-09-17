@@ -1,0 +1,19 @@
+type Zone {
+  id: ID
+  name: String!
+}
+
+input ZoneInput {
+  name: String!
+}
+
+type Query {
+  zones: [Zone]!
+  zone(id: ID!): Zone
+}
+
+type Mutation {
+  createZone(zoneInput: ZoneInput!): Zone!
+  updateZone(id: ID!, zoneInput: ZoneInput!): Zone!
+  deleteZone(id: ID!): Zone
+}

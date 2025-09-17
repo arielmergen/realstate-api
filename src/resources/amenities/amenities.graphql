@@ -1,0 +1,23 @@
+type Amenity {
+  id: ID
+  name: String!
+  icon: String
+  types: [PropertyType!]
+}
+
+input AmenityInput {
+  name: String!
+  icon: String
+  types: [ID!]
+}
+
+type Query {
+  amenities: [Amenity]!
+  amenity(id: ID!): Amenity
+}
+
+type Mutation {
+  createAmenity(amenityInput: AmenityInput): Amenity
+  updateAmenity(id: ID!, amenityInput: AmenityInput): Amenity
+  deleteAmenity(id: ID!): Amenity
+}

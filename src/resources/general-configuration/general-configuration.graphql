@@ -1,0 +1,41 @@
+type GeneralConfiguration {
+  address: String!
+  copyright: String!
+  email: String!
+  facebook: String!
+  facebookPixel: String!
+  gtm: String!
+  id: ID
+  instagram: String!
+  linkedin: String!
+  phone: Float!
+  whatsapp: Float!
+}
+
+input GeneralConfigurationInput {
+  phone: Float!
+  whatsapp: Float!
+  email: String!
+  address: String!
+  instagram: String!
+  facebook: String!
+  linkedin: String!
+  gtm: String!
+  facebookPixel: String!
+  copyright: String!
+}
+
+type Query {
+  generalConfigurations: [GeneralConfiguration]
+  generalConfiguration(id: ID!): GeneralConfiguration
+}
+
+type Mutation {
+  createGeneralConfiguration(
+    generalConfigurationInput: GeneralConfigurationInput!
+  ): GeneralConfiguration!
+  updateGeneralConfiguration(
+    generalConfigurationInput: GeneralConfigurationInput!
+  ): GeneralConfiguration!
+  deleteGeneralConfiguration(id: ID!): GeneralConfiguration
+}

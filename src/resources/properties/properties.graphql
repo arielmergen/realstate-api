@@ -1,0 +1,211 @@
+type Property {
+  status: String
+  amenities: [Amenity]
+  antiquity: Int
+  attachments: [String]
+  backyardSquareSpace: Float
+  bathroomsAmount: Int
+  bedroomsAmount: Int
+  closeness: String
+  code: String
+  commission: Int
+  condition: String
+  createdAt: DateTime
+  createdBy: User
+  currency: String
+  description: String
+  disposal: String
+  expenses: Float
+  featured: Boolean
+  floors: Int
+  frontSquareSpace: Float
+  garageAmount: Int
+  geoAddress: String
+  geoAddressApartment: String
+  geoAddressBetweenStreet1: String
+  geoAddressBetweenStreet2: String
+  geoAddressFloor: String
+  geoAddressNumber: String
+  geoCity: Neighborhood
+  geoLocation: Entrepreneurship
+  geoNear: String
+  geoZipCode: String
+  geoZone: Zone
+  id: ID
+  images: [Image]
+  innerSquareSpace: Float
+  innerState: String
+  isCreditAvaiable: Boolean
+  isDirectionHidden: Boolean
+  isEntrepreneurship: Boolean
+  isHighlighted: Boolean
+  isOcuppied: Boolean
+  isProfessionalAvaiable: Boolean
+  isPublicPrice: Boolean
+  isReplicated: Boolean
+  lat: Float
+  long: Float
+  matterport: String
+  operation: String
+  orientation: String
+  outterSquareSpace: Float
+  owner: Owner
+  price: Float
+  semiGarageAmount: Int
+  semiInnerSquareSpace: Float
+  services: [Service]
+  spacesNumber: Int
+  state: String
+  tipology: String
+  neighborhoodType: String
+  title: String
+  secondaryTitle: String
+  toilettesAmount: Int
+  totalBuiltSquareSpace: Float
+  totalSquareSpace: Float
+  tour360: String
+  type: PropertyType
+  updatedAt: DateTime
+  videos: [String]
+}
+
+input PropertyInput {
+  status: String
+  amenities: [ID!]
+  antiquity: Int
+  attachments: [String!]
+  backyardSquareSpace: Float
+  bathroomsAmount: Int
+  bedroomsAmount: Int
+  closeness: String
+  commission: Int!
+  condition: String
+  createdByEmail: String!
+  currency: String!
+  description: String!
+  disposal: String
+  expenses: Float
+  featured: Boolean
+  floors: Int
+  frontSquareSpace: Float
+  garageAmount: Int
+  geoAddress: String!
+  geoAddressApartment: String
+  geoAddressBetweenStreet1: String
+  geoAddressBetweenStreet2: String
+  geoAddressFloor: String
+  geoAddressNumber: String!
+  geoCity: ID
+  geoLocation: ID!
+  geoNear: String
+  geoZipCode: String
+  geoZone: ID!
+  images: [CreateImageInput!]
+  innerSquareSpace: Float
+  isCreditAvaiable: Boolean
+  isDirectionHidden: Boolean
+  isEntrepreneurship: Boolean
+  isHighlighted: Boolean
+  isOcuppied: Boolean
+  isProfessionalAvaiable: Boolean
+  isPublicPrice: Boolean
+  lat: Float
+  long: Float
+  matterport: String
+  oldImages: [ImageInput!]
+  operation: String!
+  orientation: String
+  outterSquareSpace: Float
+  owner: ID
+  price: Float!
+  semiGarageAmount: Int
+  semiInnerSquareSpace: Float
+  services: [ID!]
+  spacesNumber: Int
+  state: String!
+  tipology: String
+  neighborhoodType: String
+  title: String!
+  secondaryTitle: String
+  toilettesAmount: Int
+  totalBuiltSquareSpace: Float
+  totalSquareSpace: Float
+  tour360: String
+  type: ID
+  videos: [String!]
+}
+
+input FeatureFilterInput {
+  amenities: [ID!]
+  services: [ID!]
+}
+
+input PropertyFiltersInput {
+  amenities: [ID!]
+  antiquity: [Int!]
+  antiquityFrom: Int
+  backyardSquareSpaceFrom: Float
+  backyardSquareSpaceTo: Float
+  bedroomsAmountFrom: Int
+  bedroomsAmountTo: Int
+  currency: String
+  disposal: [String!]
+  features: FeatureFilterInput
+  frontSquareSpaceFrom: Float
+  frontSquareSpaceTo: Float
+  geoCity: [ID!]
+  geoLocation: ID
+  geoZone: ID
+  innerSquareSpaceFrom: Float
+  innerSquareSpaceTo: Float
+  isHighlighted: Boolean
+  operation: String
+  orientation: [String!]
+  outterSquareSpace: Float
+  outterSquareSpaceFrom: Float
+  outterSquareSpaceTo: Float
+  priceFrom: Float
+  priceTo: Float
+  semiInnerSquareSpaceFrom: Float
+  semiInnerSquareSpaceTo: Float
+  services: [ID!]
+  spacesNumberFrom: Int
+  spacesNumberTo: Int
+  tipology: [String!]
+  neighborhoodType: String
+  totalBuiltSquareSpaceFrom: Float
+  totalBuiltSquareSpaceTo: Float
+  totalSquareSpaceFrom: Float
+  totalSquareSpaceTo: Float
+  type: [ID!]
+  secondaryTitle: String
+}
+
+type PropertyEdge {
+  cursor: ID
+  node: Property
+}
+type PageInfo {
+  endCursor: ID
+  hasNextPage: Boolean
+}
+type PropertyResponse {
+  edges: [PropertyEdge]
+  pageInfo: PageInfo
+  totalCount: Int
+}
+
+type Query {
+  properties(
+    filters: PropertyFiltersInput
+    first: Int
+    after: ID
+  ): PropertyResponse!
+  property(id: ID!): Property
+}
+
+type Mutation {
+  createProperty(propertyInput: PropertyInput!): Property
+  updateProperty(id: ID!, propertyInput: PropertyInput): Property
+  deleteProperty(id: ID!): Property
+}

@@ -1,0 +1,42 @@
+type Slide {
+  description: String
+  id: ID!
+  image: Image
+  link: String
+  name: String
+  title: String
+}
+
+input SlideInput {
+  description: String
+  oldImage: ImageInput
+  image: CreateImageInput
+  link: String
+  name: String
+  title: String
+}
+
+type Slider {
+  id: ID!
+  slides: [Slide!]
+}
+
+input SliderInput {
+  slides: [SlideInput!]
+}
+
+input UpdateSliderInput {
+  id: ID
+  slides: [SlideInput!]
+}
+
+type Query {
+  sliders: [Slider]!
+  slider(id: ID!): Slider
+}
+
+type Mutation {
+  createSlider(sliderInput: SliderInput!): Slider!
+  updateSlider(id: ID!, sliderInput: UpdateSliderInput!): Slider!
+  deleteSlider(id: ID!): Slider
+}

@@ -1,0 +1,39 @@
+type User {
+  email: String!
+  firstName: String
+  id: ID!
+  lastName: String
+  officePhone: Float
+  phone: Float
+  picture: Image
+  refreshToken: String
+  role: Role!
+  state: Int
+  username: String
+}
+
+input UserInput {
+  email: String!
+  firstName: String
+  id: ID!
+  lastName: String
+  newPassword: String
+  officePhone: Float
+  password: String
+  phone: Float
+  picture: CreateImageInput
+  oldPicture: ImageInput
+  refreshToken: String
+  role: ID
+  username: String
+}
+
+type Query {
+  users: [User]!
+  user(id: ID!): User
+}
+
+type Mutation {
+  updateUser(userInput: UserInput!): User!
+  deleteUser(id: ID!): User
+}

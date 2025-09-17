@@ -1,0 +1,26 @@
+enum State {
+  Vendida
+  Reservada
+  Disponible
+  Alquilada
+}
+
+type PropertyType {
+  id: ID
+  name: String
+  states: [String]
+}
+
+input PropertyTypeInput {
+  name: String!
+  states: [String!]
+}
+type Query {
+  propertyTypes: [PropertyType!]!
+  propertyType(id: ID!): PropertyType!
+}
+
+type Mutation {
+  createPropertyType(propertyTypeInput: PropertyTypeInput!): PropertyType!
+  deletePropertyType(id: ID!): PropertyType
+}

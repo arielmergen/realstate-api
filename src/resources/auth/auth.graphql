@@ -1,0 +1,37 @@
+type Tokens {
+  accessToken: String!
+  refreshToken: String!
+}
+
+input AuthInput {
+  email: String!
+  password: String!
+}
+
+input RefreshInput {
+  refreshToken: String!
+}
+
+input RegisterUserInput {
+  email: String!
+  firstName: String
+  id: ID
+  lastName: String
+  newPassword: String
+  officePhone: Float
+  password: String!
+  phone: Float
+  picture: CreateImageInput
+  oldPicture: ImageInput
+  refreshToken: String
+  username: String
+}
+
+type Mutation {
+  login(authInput: AuthInput!): Tokens!
+  logout(user: UserInput): ID
+  googleLogin: Tokens
+  refresh(refreshInput: RefreshInput!): Tokens!
+  updateSession(user: UserInput!, refreshInput: RefreshInput!): Tokens!
+  register(userInput: RegisterUserInput!): Tokens
+}

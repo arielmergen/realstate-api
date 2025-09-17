@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: orbita-postgres
+    environment:
+      POSTGRES_DB: orbita_db
+      POSTGRES_USER: orbita
+      POSTGRES_PASSWORD: orbita123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - orbita-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orbita -d orbita_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: orbita-api
+    ports:
+      - "3001:3000"
+    environment:
+      - DATABASE_URL=postgresql://orbita:orbita123@postgres:5432/orbita_db
+      - JWT_SECRET=orbita-local-secret-key-2024
+      - TOKEN_VALIDITY_TIME=24
+      - TOKEN_VALIDITY_UNITS=h
+      - REFRESH_TOKEN_VALIDITY_TIME=7
+      - REFRESH_TOKEN_VALIDITY_UNITS=d
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - PORT=3000
+      - NODE_ENV=development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - orbita-network
+    command: npm run start:dev
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  orbita-network:
+    driver: bridge

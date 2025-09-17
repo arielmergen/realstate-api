@@ -1,0 +1,123 @@
+scalar DateTime
+
+type Masterplan {
+  description: String
+  id: ID
+  src: String
+  title: String
+}
+
+input MasterplanInput {
+  description: String
+  src: String
+  title: String
+}
+
+input UpdateMasterplanInput {
+  id: ID!
+  description: String
+  src: String
+  title: String
+}
+
+type Location {
+  description: String
+  id: ID
+  lat: Float
+  long: Float
+  title: String
+}
+input LocationInput {
+  description: String
+  lat: Float
+  long: Float
+  title: String
+}
+input UpdateLocationInput {
+  description: String
+  id: ID!
+  lat: Float
+  long: Float
+  title: String
+}
+
+type Feature {
+  attachments: [Masterplan!]
+  code: String
+  createdAt: DateTime
+  description: String
+  grid: Grid
+  highlightedImage: Image
+  highlightedItems: [String!]
+  id: ID
+  innerState: String
+  location: Location
+  masterplan: Masterplan
+  secondaryDescription: String
+  secondaryImage: Image
+  secondarySubtitle: String
+  secondaryTitle: String
+  slider: Slider
+  subtitle: String
+  template: String
+  title: String
+  video: String
+  tokkoId: String
+}
+
+input FeatureInput {
+  attachments: [MasterplanInput!]
+  code: String
+  description: String
+  grid: GridInput
+  highlightedImage: CreateImageInput
+  highlightedItems: [String!]
+  innerState: String
+  location: LocationInput
+  masterplan: MasterplanInput
+  secondaryDescription: String
+  secondaryImage: CreateImageInput
+  secondarySubtitle: String
+  secondaryTitle: String
+  slider: SliderInput
+  subtitle: String
+  template: String!
+  title: String
+  video: String
+  tokkoId: String
+}
+
+input UpdateFeatureInput {
+  attachments: [UpdateMasterplanInput!]
+  code: String
+  description: String
+  grid: UpdateGridInput
+  highlightedImage: CreateImageInput
+  highlightedItems: [String!]
+  innerState: String
+  location: UpdateLocationInput
+  masterplan: UpdateMasterplanInput
+  secondaryDescription: String
+  secondaryImage: CreateImageInput
+  secondarySubtitle: String
+  secondaryTitle: String
+  oldHighlightedImage: ImageInput
+  oldSecondaryImage: ImageInput
+  slider: UpdateSliderInput
+  subtitle: String
+  template: String!
+  title: String
+  video: String
+  tokkoId: String
+}
+
+type Query {
+  features: [Feature]!
+  feature(id: ID!): Feature
+}
+
+type Mutation {
+  createFeature(featureInput: FeatureInput!): Feature!
+  updateFeature(id: ID!, featureInput: UpdateFeatureInput!): Feature!
+  deleteFeature(id: ID!): Feature
+}

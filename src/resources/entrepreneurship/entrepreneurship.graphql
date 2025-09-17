@@ -1,0 +1,28 @@
+type Entrepreneurship {
+  id: ID
+  name: String!
+  zone: Zone
+  tokkoId: String
+}
+
+input EntrepreneurshipInput {
+  name: String!
+  zone: ID!
+  tokkoId: String
+}
+
+type Query {
+  entrepreneurships(associatedZone: ID): [Entrepreneurship]!
+  entrepreneurship(id: ID!): Entrepreneurship
+}
+
+type Mutation {
+  createEntrepreneurship(
+    entrepreneurshipInput: EntrepreneurshipInput!
+  ): Entrepreneurship!
+  updateEntrepreneurship(
+    id: ID!
+    entrepreneurshipInput: EntrepreneurshipInput!
+  ): Entrepreneurship!
+  deleteEntrepreneurship(id: ID!): Entrepreneurship
+}

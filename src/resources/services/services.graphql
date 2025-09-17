@@ -1,0 +1,23 @@
+type Service {
+  id: ID
+  name: String
+  icon: String
+  types: [PropertyType]
+}
+
+input ServiceInput {
+  name: String!
+  icon: String
+  types: [ID!]
+}
+
+type Query {
+  services: [Service]!
+  service(id: ID!): Service
+}
+
+type Mutation {
+  createService(serviceInput: ServiceInput!): Service!
+  updateService(serviceInput: ServiceInput!): Service!
+  deleteService(id: ID!): Service
+}

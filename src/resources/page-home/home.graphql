@@ -1,0 +1,52 @@
+type FeaturedZone {
+    title: String!
+    paragraph: String 
+}
+
+type FeaturedProperties {
+    title: String!
+    paragraph: String
+}
+
+type Categories {
+    title: String!
+    paragraph: String
+}
+
+type Home {
+    categories: Categories
+    featuredProperties: FeaturedProperties
+    featuredZone: FeaturedZone
+}
+
+input CategoriesInput {
+    title: String!
+    paragraph: String
+}
+
+input FeaturedPropertiesInput {
+    title: String!
+    paragraph: String
+}
+
+input FeaturedZoneInput {
+    title: String!
+    paragraph: String 
+}
+
+input CreateHomePageInput {
+    categories: CategoriesInput
+    featuredProperties: FeaturedPropertiesInput
+    featuredZone: FeaturedZoneInput
+}
+##---QUERYSS
+type Query {
+    id: Int
+    home: Home
+}
+
+type Mutation {
+    createHomePage(
+        createHomePageInput: CreateHomePageInput!
+    ) : Home!
+}

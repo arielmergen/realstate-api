@@ -1,0 +1,30 @@
+type Grid {
+  id: ID!
+  description: String
+  slides: [Slide!]
+  title: String
+}
+
+input GridInput {
+  description: String
+  slides: [SlideInput!]
+  title: String
+}
+
+input UpdateGridInput {
+  id: ID
+  description: String
+  slides: [SlideInput!]
+  title: String
+}
+
+type Query {
+  grids: [Grid]!
+  grid(id: Int!): Grid
+}
+
+type Mutation {
+  createGrid(gridInput: GridInput!): Grid!
+  updateGrid(gridInput: GridInput!): Grid!
+  deleteGrid(id: Int!): Grid
+}

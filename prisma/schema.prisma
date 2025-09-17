@@ -1,0 +1,310 @@
+generator client {
+  provider = "prisma-client-js"
+   binaryTargets = "rhel-openssl-1.0.x"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model GeneralConfiguration {
+  address String
+  copyright String
+  email String
+  facebook String
+  facebookPixel String
+  gtm String
+  id String @id @default(uuid())
+  instagram String
+  linkedin String
+  phone Float
+  whatsapp Float
+}
+
+model Slide {
+  description String?
+  id String @id @default(uuid())
+  image Image? @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  imageId String?
+  link String?
+  name String?
+  title String?
+  sliderConfiguration SliderConfiguration? @relation(fields: [sliderConfigurationId], references: [id])
+  sliderConfigurationId String?
+  gridConfiguration GridConfiguration? @relation(fields: [gridConfigurationId], references: [id])
+  gridConfigurationId String?
+}
+
+model SliderConfiguration {
+  id String @id @default(uuid())
+  slides Slide[]
+  feature Feature? @relation(fields: [featureId], references: [id])
+  featureId String? @unique
+  homeConfiguration HomeConfiguration? @relation(fields: [homeConfigurationId], references: [id])
+  homeConfigurationId String? @unique
+}
+
+model GridConfiguration {
+  id String @id @default(uuid())
+  title String?
+  description String?
+  slides Slide[]
+  feature Feature? @relation(fields: [featureId], references: [id])
+  featureId String? @unique
+  homeConfiguration HomeConfiguration? @relation(fields: [homeConfigurationId], references: [id])
+  homeConfigurationId String? @unique
+}
+
+model Contact {
+  email String
+  firstName String
+  id String @id @default(uuid())
+  lastName String
+  message String
+  phone Float
+  subject String
+}
+
+model Owner {
+  email String
+  firstName String
+  id String @id @default(uuid())
+  lastName String?
+  phone Float
+  properties Property[]
+}
+
+model User {
+  email String @unique
+  firstName String?
+  id String @id @default(uuid())
+  lastName String?
+  password String
+  phone Float?
+  officePhone Float?
+  picture Image? @relation(fields: [pictureId], references: [publicId])
+  pictureId String? @unique
+  role Role @relation(fields: [roleId], references: [id])
+  roleId String
+  state Int?
+  username String?
+  refreshToken String?
+  properties Property[]
+}
+
+model Role {
+  description String
+  id String @id @default(uuid())
+  name String 
+  users User[]
+}
+
+model Amenity {
+  icon String?
+  id String @id @default(uuid())
+  name String @unique
+  properties Property[]
+  types PropertyType[]
+}
+
+model Service {
+  icon String?
+  id String @id @default(uuid())
+  name String @unique
+  properties Property[]
+  types PropertyType[]
+}
+
+model PropertyType {
+  amenities Amenity[]
+  id String @id @default(uuid())
+  name String @unique
+  properties Property[]
+  services Service[]
+  states String[] @default(["Vendida","Reservada","Disponible","Alquilada"])
+}
+
+model Image {
+  alt String?
+  id String @id @default(uuid())
+  publicId String @unique
+  user User?
+  isHighlighted Boolean?
+  properties Property[]
+  slides Slide[]
+  highlightedImage Feature? @relation("highlightedImage", fields: [highlightedImageId], references: [id])
+  highlightedImageId String? @unique
+  secondaryImage Feature? @relation("secondaryImage", fields: [secondaryImageId], references: [id])
+  secondaryImageId String? @unique
+  src String 
+  order Int?
+}
+
+model Zone {
+  id String @id @default(uuid())
+  name String
+  entrepreneurships Entrepreneurship[]
+  properties Property[]
+}
+
+model Entrepreneurship {
+  id String @id @default(uuid())
+  name String
+  neighborhoods Neighborhood[]
+  zone Zone @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  zoneId String
+  properties Property[]
+  tokkoId String?
+}
+
+model Neighborhood {
+  id String @id @default(uuid())
+  name String
+  entrepreneurship Entrepreneurship @relation(fields: [entrepreneurshipId], references: [id], onDelete: Cascade)
+  entrepreneurshipId String
+  properties Property[]
+  tokkoId String?
+}
+
+model Property {
+  amenities Amenity[]
+  antiquity Int?
+  attachments String[]
+  backyardSquareSpace Float?
+  bathroomsAmount Int?
+  bedroomsAmount Int?
+  closeness String?
+  code String
+  commission Int
+  condition String?
+  createdAt DateTime @default(now())
+  createdBy User @relation(fields: [createdByEmail], references: [email])
+  createdByEmail String 
+  currency String
+  description String
+  disposal String?
+  expenses Float?
+  featured Boolean?
+  floors Int?
+  frontSquareSpace Float?
+  garageAmount Int?
+  geoAddress String
+  geoAddressApartment String?
+  geoAddressBetweenStreet1 String?
+  geoAddressBetweenStreet2 String?
+  geoAddressFloor String?
+  geoAddressNumber String
+  geoCity Neighborhood? @relation(fields: [geoCityId], references: [id])
+  geoCityId String?
+  geoLocation Entrepreneurship @relation(fields: [geoLocationId], references: [id])
+  geoLocationId String
+  geoNear String?
+  geoZipCode String?
+  geoZone Zone @relation(fields: [geoZoneId], references: [id])
+  geoZoneId String
+  id String @id @default(uuid())
+  images Image[]
+  innerSquareSpace Float?
+  innerState String
+  isCreditAvaiable Boolean?
+  isDirectionHidden Boolean?
+  isEntrepreneurship Boolean?
+  isHighlighted Boolean?
+  isOccupied Boolean?
+  isProfessionalAvaiable Boolean?
+  isPublicPrice Boolean?
+  isReplicated Boolean  @default(false)
+  lat Float?
+  long Float?
+  matterport String?
+  operation String
+  orientation String?
+  outterSquareSpace Float?
+  owner Owner? @relation(fields: [ownerId], references: [id])
+  ownerId String?
+  price Float
+  semiGarageAmount Int?
+  semiInnerSquareSpace Float?
+  services Service[]
+  spacesNumber Int?
+  state String
+  tipology String?
+  title String
+  secondaryTitle String?
+  toilettesAmount Int?
+  totalBuiltSquareSpace Float?
+  totalSquareSpace Float?
+  tour360 String?
+  type PropertyType? @relation(fields: [typeId], references: [id])
+  typeId String?
+  updatedAt DateTime @default(now())
+  videos String[]
+  neighborhoodType String?
+  status String?
+}
+
+model Masterplan {
+  description String?
+  feature Feature? @relation("masterplan", fields: [featureId], references: [id], onDelete: Cascade)
+  featureId String? @unique
+  features Feature[]
+  id String @id @default(uuid())
+  src String?
+  title String?
+}
+
+model HomeConfiguration {
+  id String @id @default(uuid())
+  slider SliderConfiguration?
+  grid GridConfiguration?
+}
+
+model Location {
+  description String?
+  feature Feature? @relation(fields: [featureId], references: [id], onDelete: Cascade)
+  featureId String? @unique
+  id String @id @default(uuid())
+  lat Float?
+  long Float?
+  title String?
+}
+
+model Feature {
+  attachments Masterplan[]
+  code String
+  createdAt DateTime @default(now())
+  description String?
+  grid GridConfiguration?
+  highlightedImage Image? @relation("highlightedImage")
+  highlightedItems String[]
+  id String @id @default(uuid())
+  innerState String
+  location Location?
+  masterplan Masterplan? @relation("masterplan")
+  secondaryDescription String?
+  secondaryImage Image? @relation("secondaryImage")
+  secondarySubtitle String?
+  secondaryTitle String?
+  slider SliderConfiguration?
+  subtitle String?
+  template String
+  title String?
+  updatedAt DateTime @default(now())
+  video String?
+  tokkoId String?
+}
+
+enum State {
+  Vendida
+  Reservada
+  Disponible
+  Alquilada
+}
+
+enum Roles {
+  Guest
+  Executive
+  Admin
+  Owner
+}

@@ -1,0 +1,26 @@
+type Owner {
+  email: String
+  firstName: String
+  id: ID
+  lastName: String
+  phone: Int
+  properties: [Property!]
+}
+
+input OwnerInput {
+  email: String!
+  firstName: String!
+  lastName: String
+  phone: Int!
+}
+
+type Query {
+  owners: [Owner]!
+  owner(id: ID!): Owner
+}
+
+type Mutation {
+  createOwner(ownerInput: OwnerInput!): Owner!
+  updateOwner(id: ID!, ownerInput: OwnerInput!): Owner!
+  deleteOwner(id: ID!): Owner
+}
