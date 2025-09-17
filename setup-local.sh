@@ -84,6 +84,15 @@ if ! docker-compose exec api npx prisma generate; then
     exit 1
 fi
 
+# Regenerar cliente Prisma con nuevos binaryTargets
+echo "🔄 Regenerando cliente Prisma con binaryTargets actualizados..."
+if ! docker-compose exec api npx prisma generate; then
+    echo "❌ Error regenerando cliente Prisma"
+    echo "📋 Logs de la API:"
+    docker-compose logs api
+    exit 1
+fi
+
 # Esperar a que la API esté lista
 echo "⏳ Esperando a que la API esté lista..."
 sleep 10

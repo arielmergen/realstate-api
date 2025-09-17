@@ -14,6 +14,9 @@ RUN npm ci
 # Copiar código fuente
 COPY . .
 
+# Compilar código TypeScript
+RUN npm run build
+
 # Generar cliente Prisma
 RUN npx prisma generate
 
