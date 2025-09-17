@@ -42,17 +42,10 @@ Un archivo `.sh` es un **script de Bash** - un programa que ejecuta comandos aut
 
 **Opción A: Desde la terminal (Recomendada)**
 ```bash
-# 1. Navegar a la carpeta del proyecto si no te encuentras en ella
-cd realstate-api
-
-# 2. Verificar que estás en el lugar correcto
-ls
-# Debes ver: package.json, docker-compose.yml, setup-local.sh, etc.
-
-# 3. Dar permisos de ejecución
+# Dar permisos de ejecución al archivo
 chmod +x setup-local.sh
 
-# 4. Ejecutar el script
+# Ejecutar el script
 ./setup-local.sh
 ```
 

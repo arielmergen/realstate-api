@@ -1,38 +1,3 @@
-# 🚀 API RealState - Implementación Local
-
-## Inicio Rápido
-
-### Opción 1: Configuración Automática (Recomendada)
-
-#### 📋 **Paso a Paso para Principiantes**
-
-**1. Clonar el repositorio**
-```bash
-git clone git@github.com:arielmergen/realstate-api.git
-cd realstate-api
-```
-
-**2. Configurar Cloudinary (gratuito)**
-- Ve a https://cloudinary.com
-- Crea una cuenta gratuita
-- En el Dashboard, copia:
-  - Cloud Name
-  - API Key  
-  - API Secret
-
-**3. Crear archivo de configuración**
-```bash
-cp env.example .env
-```
-
-**4. Editar el archivo .env**
-Abre el archivo `.env` con cualquier editor de texto y reemplaza:
-```env
-CLOUDINARY_CLOUD_NAME="tu-cloud-name"        # ← Pon aquí tu Cloud Name
-CLOUDINARY_API_KEY="tu-api-key"              # ← Pon aquí tu API Key
-CLOUDINARY_API_SECRET="tu-api-secret"        # ← Pon aquí tu API Secret
-```
-
 **5. Ejecutar el script de configuración automática**
 
 #### 🎯 **¿Qué es un archivo .sh?**
@@ -42,17 +7,10 @@ Un archivo `.sh` es un **script de Bash** - un programa que ejecuta comandos aut
 
 **Opción A: Desde la terminal (Recomendada)**
 ```bash
-# 1. Navegar a la carpeta del proyecto si no te encuentras en ella
-cd realstate-api
-
-# 2. Verificar que estás en el lugar correcto
-ls
-# Debes ver: package.json, docker-compose.yml, setup-local.sh, etc.
-
-# 3. Dar permisos de ejecución
+# Dar permisos de ejecución al archivo
 chmod +x setup-local.sh
 
-# 4. Ejecutar el script
+# Ejecutar el script
 ./setup-local.sh
 ```
 
@@ -198,72 +156,3 @@ curl http://localhost:3001/realstate
 - **Si algo falla**, lee el mensaje de error y sigue las instrucciones
 - **El script es inteligente**: te guía paso a paso
 - **Una vez que funcione**, no necesitas ejecutarlo de nuevo
-
-### Opción 2: Configuración Manual
-```bash
-# 1. Crear .env
-cp env.example .env
-# Editar .env con credenciales de Cloudinary
-
-# 2. Construir y ejecutar
-docker-compose up -d
-
-# 3. Configurar base de datos
-docker-compose exec api npx prisma migrate dev
-```
-
-## ✅ Verificación
-
-- **API GraphQL**: http://localhost:3001/realstate
-- **Frontend**: http://localhost:3000 (reservado para tu aplicación frontend)
-- **Base de datos**: localhost:5432
-- **Logs**: `docker-compose logs -f api`
-
-## 📋 Comandos Útiles
-
-```bash
-# Ver logs
-docker-compose logs -f api
-
-# Reiniciar API
-docker-compose restart api
-
-# Parar todo
-docker-compose down
-
-# Acceder a base de datos
-docker-compose exec postgres psql -U realstate -d realstate_db
-```
-
-## 🔧 Solución de Problemas
-
-### Puerto en uso
-```bash
-# Cambiar puerto en docker-compose.yml
-ports:
-  - "8080:3000"  # Puerto externo:interno
-```
-
-**Nota**: El puerto 3000 está reservado para el frontend. La API usa el puerto 3001.
-
-### Error de base de datos
-```bash
-# Resetear base de datos
-docker-compose exec api npx prisma migrate reset
-```
-
-### Error de Cloudinary
-- Verificar credenciales en `.env`
-- Verificar que la cuenta esté activa
-
-## 📚 Documentación Completa
-
-Ver `documents/plan-implementacion-local.md` para documentación detallada.
-
-## 🎯 Próximos Pasos
-
-1. Configurar credenciales de Cloudinary
-2. Ejecutar `./setup-local.sh`
-3. Probar la API en http://localhost:3001/realstate
-4. Crear usuario administrador
-5. ¡Comenzar a desarrollar!
