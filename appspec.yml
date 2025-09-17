@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /var/www/html/api-orbita/
+    destination: /var/www/html/api-realstate/
 hooks:
   ApplicationStart:
     - location: /scripts/start_server.sh

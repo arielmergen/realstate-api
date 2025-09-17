@@ -1,3 +1,3 @@
 #!/bin/bash
-cd /var/www/html/api-orbita
-systemctl start api-orbita
+cd /var/www/html/api-realstate
+systemctl start api-realstate

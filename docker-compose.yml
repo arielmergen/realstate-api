@@ -3,31 +3,31 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: orbita-postgres
+    container_name: realstate-postgres
     environment:
-      POSTGRES_DB: orbita_db
-      POSTGRES_USER: orbita
-      POSTGRES_PASSWORD: orbita123
+      POSTGRES_DB: realstate_db
+      POSTGRES_USER: realstate
+      POSTGRES_PASSWORD: realstate123
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - orbita-network
+      - realstate-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U orbita -d orbita_db"]
+      test: ["CMD-SHELL", "pg_isready -U realstate -d realstate_db"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   api:
     build: .
-    container_name: orbita-api
+    container_name: realstate-api
     ports:
       - "3001:3000"
     environment:
-      - DATABASE_URL=postgresql://orbita:orbita123@postgres:5432/orbita_db
-      - JWT_SECRET=orbita-local-secret-key-2024
+      - DATABASE_URL=postgresql://realstate:realstate123@postgres:5432/realstate_db
+      - JWT_SECRET=realstate-local-secret-key-2024
       - TOKEN_VALIDITY_TIME=24
       - TOKEN_VALIDITY_UNITS=h
       - REFRESH_TOKEN_VALIDITY_TIME=7
@@ -44,7 +44,7 @@ services:
       - .:/app
       - /app/node_modules
     networks:
-      - orbita-network
+      - realstate-network
     command: npm run start:dev
     restart: unless-stopped
 
@@ -52,5 +52,5 @@ volumes:
   postgres_data:
 
 networks:
-  orbita-network:
+  realstate-network:
     driver: bridge

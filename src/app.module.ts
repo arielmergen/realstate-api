@@ -35,7 +35,7 @@ import { HomeModule } from './resources/page-home/home.module';
       driver: ApolloDriver,
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
-      path: '/orbita',
+      path: '/realstate',
       bodyParserConfig: false,
       typePaths: ['./**/*.graphql'],
       /*formatError: (error) => {

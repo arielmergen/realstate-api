@@ -1,4 +1,4 @@
-# 🚀 API Orbita - Implementación Local
+# 🚀 API RealState - Implementación Local
 
 ## Inicio Rápido
 
@@ -34,7 +34,7 @@ docker-compose exec api npx prisma migrate dev
 
 ## ✅ Verificación
 
-- **API GraphQL**: http://localhost:3001/orbita
+- **API GraphQL**: http://localhost:3001/realstate
 - **Frontend**: http://localhost:3000 (reservado para tu aplicación frontend)
 - **Base de datos**: localhost:5432
 - **Logs**: `docker-compose logs -f api`
@@ -52,7 +52,7 @@ docker-compose restart api
 docker-compose down
 
 # Acceder a base de datos
-docker-compose exec postgres psql -U orbita -d orbita_db
+docker-compose exec postgres psql -U realstate -d realstate_db
 ```
 
 ## 🔧 Solución de Problemas
@@ -84,6 +84,6 @@ Ver `documents/plan-implementacion-local.md` para documentación detallada.
 
 1. Configurar credenciales de Cloudinary
 2. Ejecutar `./setup-local.sh`
-3. Probar la API en http://localhost:3001/orbita
+3. Probar la API en http://localhost:3001/realstate
 4. Crear usuario administrador
 5. ¡Comenzar a desarrollar!

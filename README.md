@@ -1,2 +1,2 @@
-## Orbita backend project
-This repo contains a **NextJS** api related to **Orbita**.
+## RealState backend project
+This repo contains a **NestJS** api related to **RealState**.

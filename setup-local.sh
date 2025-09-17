@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script de configuración local para API Orbita
-echo "🚀 Configurando API Orbita para desarrollo local..."
+# Script de configuración local para API RealState
+echo "🚀 Configurando API RealState para desarrollo local..."
 
 # Verificar que Docker esté instalado
 if ! command -v docker &> /dev/null; then
@@ -57,7 +57,7 @@ echo ""
 echo "✅ ¡Configuración completada!"
 echo ""
 echo "🌐 URLs disponibles:"
-echo "   - API GraphQL: http://localhost:3001/orbita"
+echo "   - API GraphQL: http://localhost:3001/realstate"
 echo "   - Frontend: http://localhost:3000 (reservado para tu aplicación frontend)"
 echo "   - Base de datos: localhost:5432"
 echo ""
@@ -65,6 +65,6 @@ echo "📋 Comandos útiles:"
 echo "   - Ver logs: docker-compose logs -f api"
 echo "   - Parar servicios: docker-compose down"
 echo "   - Reiniciar API: docker-compose restart api"
-echo "   - Acceder a base de datos: docker-compose exec postgres psql -U orbita -d orbita_db"
+echo "   - Acceder a base de datos: docker-compose exec postgres psql -U realstate -d realstate_db"
 echo ""
-echo "🎉 ¡La API Orbita está lista para usar!"
+echo "🎉 ¡La API RealState está lista para usar!"
