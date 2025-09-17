@@ -92,6 +92,37 @@ for i in {1..30}; do
     sleep 2
 done
 
+# Verificar que la API esté completamente lista
+echo "⏳ Esperando a que la API esté completamente lista..."
+sleep 20
+
+# Verificar que el build se completó correctamente
+echo "🔍 Verificando que el build se completó correctamente..."
+
+# Lista de archivos críticos que deben existir
+CRITICAL_FILES=(
+    "dist/src/app.controller.js"
+    "dist/src/app.module.js"
+    "dist/src/main.js"
+    "dist/src/app.service.js"
+)
+
+# Verificar cada archivo crítico
+for file in "${CRITICAL_FILES[@]}"; do
+    if ! docker-compose exec api test -f "$file"; then
+        echo "⚠️  Archivo $file no encontrado, recompilando..."
+        if ! docker-compose exec api npm run build; then
+            echo "❌ Error recompilando la aplicación"
+            echo "📋 Logs de la API:"
+            docker-compose logs api
+            exit 1
+        fi
+        break
+    fi
+done
+
+echo "✅ Build verificado correctamente"
+
 # Sincronizar esquema de base de datos (sin crear migraciones)
 echo "🗄️  Sincronizando esquema de base de datos..."
 if ! docker-compose exec api npx prisma db push; then
@@ -146,6 +177,26 @@ if ! docker-compose exec api npm run db:seed; then
     docker-compose logs api
     exit 1
 fi
+
+# Verificación final de que la API esté funcionando
+echo "🔍 Verificación final de la API..."
+sleep 10
+
+# Verificar que la API responda correctamente
+echo "⏳ Verificando que la API responda correctamente..."
+for i in {1..10}; do
+    if curl -s http://localhost:3001/realstate >/dev/null 2>&1; then
+        echo "✅ API GraphQL está funcionando correctamente"
+        break
+    fi
+    if [ $i -eq 10 ]; then
+        echo "⚠️  API no responde, pero los servicios están ejecutándose"
+        echo "   Puedes verificar los logs con: docker-compose logs -f api"
+        break
+    fi
+    echo "⏳ Verificando API... (intento $i/10)"
+    sleep 3
+done
 
 echo ""
 echo "✅ ¡Configuración completada!"
