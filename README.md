@@ -132,6 +132,14 @@ chmod +x setup-local.sh
 | **Admin** | `admin@realstate.com` | `realstate123` | Acceso completo |
 | **Owner** | `owner@realstate.com` | `realstate123` | Control total |
 
+### 🌐 **URLs Disponibles**
+
+| **Servicio** | **URL** | **Descripción** |
+|--------------|---------|-----------------|
+| **API GraphQL** | http://localhost:3001/realstate | Endpoint principal de la API |
+| **Frontend** | http://localhost:3000 | Interfaz de usuario (reservado) |
+| **Base de Datos** | localhost:5432 | PostgreSQL directo |
+
 ## 🔧 **Comandos Útiles**
 
 ```bash
@@ -147,14 +155,43 @@ docker-compose restart api
 # Acceder a la base de datos
 docker-compose exec postgres psql -U realstate -d realstate_db
 
-# Recrear datos iniciales
+# GESTIÓN DE DATOS (IMPORTANTE!)
+# Recrear datos iniciales (necesario después de la primera instalación)
 docker-compose exec api npm run db:seed
+
+# Si no ves datos en la API, ejecuta:
+docker-compose exec api npm run db:seed
+
+# Resetear base de datos completamente (limpia todo y recrea)
+docker-compose exec postgres psql -U realstate -d realstate_db -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+docker-compose exec api npm run prisma:migrate
+docker-compose exec api npm run db:seed
+
+# Verificar que hay datos en la base
+docker-compose exec postgres psql -U realstate -d realstate_db -c "SELECT COUNT(*) FROM \"User\";"
+
+# Ver todas las tablas
+docker-compose exec postgres psql -U realstate -d realstate_db -c "\dt"
 
 # Parar todos los servicios
 docker-compose down
 
 # Limpiar completamente Docker (si hay conflictos)
 ./clean-docker.sh
+```
+
+### ⚠️ **Problema Común: No se ven datos**
+
+Si después de levantar la API no ves datos:
+
+```bash
+# Solución rápida
+docker-compose exec api npm run db:seed
+
+# Si sigue sin funcionar, reset completo
+docker-compose down
+docker-compose up -d
+docker-compose exec api npm run db:seed
 ```
 
 ## 🤝 **Contribuir**
