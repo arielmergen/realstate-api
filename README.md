@@ -135,6 +135,9 @@ chmod +x setup-local.sh
 ## 🔧 **Comandos Útiles**
 
 ```bash
+# Levantar todos los servicios
+docker-compose up -d
+
 # Ver logs de la API
 docker-compose logs -f api
 
