@@ -31,8 +31,8 @@ RUN adduser -S nestjs -u 1001
 RUN chown -R nestjs:nodejs /app
 USER nestjs
 
-# Exponer puerto
-EXPOSE 3000
+# Puerto interno de la API (5000)
+EXPOSE 5000
 
 # Comando por defecto
 CMD ["npm", "run", "start:dev"]

@@ -41,24 +41,90 @@ if ! command -v docker-compose &> /dev/null; then
     exit 1
 fi
 
+# Función para verificar si un puerto está disponible
+check_port() {
+    local port=$1
+    if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null 2>&1; then
+        return 1  # Puerto ocupado
+    else
+        return 0  # Puerto disponible
+    fi
+}
+
+# Función para encontrar un puerto disponible
+find_available_port() {
+    local start_port=$1
+    local port=$start_port
+    
+    while ! check_port $port; do
+        port=$((port + 1))
+        if [ $port -gt $((start_port + 100)) ]; then
+            echo "❌ No se encontró un puerto disponible en el rango $start_port-$((start_port + 100))"
+            exit 1
+        fi
+    done
+    echo $port
+}
+
+# Verificar puertos necesarios
+echo "🔍 Verificando disponibilidad de puertos..."
+
+# Verificar puerto 3001 (API)
+if ! check_port 3001; then
+    echo "⚠️  Puerto 3001 está ocupado, buscando alternativa..."
+    API_PORT=$(find_available_port 3001)
+    echo "✅ Puerto $API_PORT disponible para la API"
+else
+    API_PORT=3001
+    echo "✅ Puerto 3001 disponible para la API"
+fi
+
+# Verificar puerto 5432 (PostgreSQL)
+if ! check_port 5432; then
+    echo "⚠️  Puerto 5432 está ocupado, buscando alternativa..."
+    DB_PORT=$(find_available_port 5432)
+    echo "✅ Puerto $DB_PORT disponible para PostgreSQL"
+else
+    DB_PORT=5432
+    echo "✅ Puerto 5432 disponible para PostgreSQL"
+fi
+
 # Crear archivo .env si no existe
 if [ ! -f .env ]; then
     echo "📝 Creando archivo .env..."
     cp env.example .env
-    echo "✅ Archivo .env creado. Por favor configura las credenciales de Cloudinary."
-    echo "   Edita el archivo .env y actualiza:"
-    echo "   - CLOUDINARY_CLOUD_NAME"
-    echo "   - CLOUDINARY_API_KEY" 
-    echo "   - CLOUDINARY_API_SECRET"
-    echo ""
-    echo "   Puedes obtener estas credenciales en: https://cloudinary.com"
-    echo ""
-    read -p "¿Has configurado las credenciales de Cloudinary? (y/n): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "⚠️  Por favor configura las credenciales de Cloudinary antes de continuar."
-        exit 1
-    fi
+    echo "✅ Archivo .env creado"
+else
+    echo "✅ Archivo .env ya existe"
+fi
+
+# Configurar puerto de API en .env
+echo "🔧 Configurando puerto de API en .env..."
+if grep -q "API_PORT=" .env; then
+    # Actualizar puerto existente
+    sed -i.bak "s/API_PORT=.*/API_PORT=$API_PORT/" .env
+else
+    # Agregar puerto si no existe
+    echo "API_PORT=$API_PORT" >> .env
+fi
+
+echo "   - API se ejecutará en puerto $API_PORT (mapeado desde 5000 interno)"
+echo "   - Puerto 3000 reservado para frontend"
+
+echo ""
+echo "✅ Archivo .env configurado. Por favor configura las credenciales de Cloudinary."
+echo "   Edita el archivo .env y actualiza:"
+echo "   - CLOUDINARY_CLOUD_NAME"
+echo "   - CLOUDINARY_API_KEY" 
+echo "   - CLOUDINARY_API_SECRET"
+echo ""
+echo "   Puedes obtener estas credenciales en: https://cloudinary.com"
+echo ""
+read -p "¿Has configurado las credenciales de Cloudinary? (y/n): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "⚠️  Por favor configura las credenciales de Cloudinary antes de continuar."
+    exit 1
 fi
 
 # Verificar y limpiar solo contenedores específicos de RealState
@@ -157,7 +223,7 @@ sleep 10
 # Verificar que la API esté funcionando
 echo "🔍 Verificando que la API esté funcionando..."
 for i in {1..20}; do
-    if curl -s http://localhost:3001/realstate >/dev/null 2>&1; then
+    if curl -s http://localhost:$API_PORT/realstate >/dev/null 2>&1; then
         echo "✅ API está funcionando"
         break
     fi
@@ -185,7 +251,7 @@ sleep 10
 # Verificar que la API responda correctamente
 echo "⏳ Verificando que la API responda correctamente..."
 for i in {1..10}; do
-    if curl -s http://localhost:3001/realstate >/dev/null 2>&1; then
+    if curl -s http://localhost:$API_PORT/realstate >/dev/null 2>&1; then
         echo "✅ API GraphQL está funcionando correctamente"
         break
     fi
@@ -202,7 +268,7 @@ echo ""
 echo "✅ ¡Configuración completada!"
 echo ""
 echo "🌐 URLs disponibles:"
-echo "   - API GraphQL: http://localhost:3001/realstate"
+echo "   - API GraphQL: http://localhost:$API_PORT/realstate"
 echo "   - Frontend: http://localhost:3000 (reservado para tu aplicación frontend)"
 echo "   - Base de datos: localhost:5432"
 echo ""
@@ -218,5 +284,9 @@ echo "   - Parar servicios: docker-compose down"
 echo "   - Reiniciar API: docker-compose restart api"
 echo "   - Acceder a base de datos: docker-compose exec postgres psql -U realstate -d realstate_db"
 echo "   - Recrear usuarios: docker-compose exec api npm run db:seed"
+echo ""
+echo "🔧 Configuración de puertos:"
+echo "   - API: Puerto $API_PORT (mapeado desde 5000 interno)"
+echo "   - Puerto 3000: Reservado para frontend"
 echo ""
 echo "🎉 ¡La API RealState está lista para usar!"
