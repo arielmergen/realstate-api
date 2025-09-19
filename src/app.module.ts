@@ -38,6 +38,18 @@ import { HomeModule } from './resources/page-home/home.module';
       path: '/realstate',
       bodyParserConfig: false,
       typePaths: ['./**/*.graphql'],
+      introspection: true,
+      subscriptions: {
+        'graphql-ws': {
+          onConnect: (context) => {
+            console.log('🔌 WebSocket GraphQL conectado');
+            return true;
+          },
+          onDisconnect: (context, code, reason) => {
+            console.log('🔌 WebSocket GraphQL desconectado');
+          },
+        },
+      },
       /*formatError: (error) => {
         const graphQLFormattedError = {
           message: error.message,

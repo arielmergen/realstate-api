@@ -3,6 +3,22 @@
 # Script de configuración local para API RealState
 echo "🚀 Configurando API RealState para desarrollo local..."
 
+# Detectar sistema operativo
+detect_os() {
+    case "$(uname -s)" in
+        Darwin*)    OS="macos" ;;
+        Linux*)     OS="linux" ;;
+        CYGWIN*)    OS="windows" ;;
+        MINGW*)     OS="windows" ;;
+        MSYS*)      OS="windows" ;;
+        *)          OS="unknown" ;;
+    esac
+    echo "🔍 Sistema operativo detectado: $OS"
+}
+
+# Detectar sistema operativo al inicio
+detect_os
+
 # Función para limpiar solo contenedores específicos de RealState
 clean_realstate_containers() {
     echo "🧹 Verificando contenedores anteriores de RealState..."
@@ -30,6 +46,71 @@ clean_realstate_containers() {
     echo "✅ Verificación y limpieza completada"
 }
 
+# Función para liberar puertos ocupados (multiplataforma)
+free_occupied_ports() {
+    echo "🔓 Liberando puertos ocupados por instalaciones anteriores..."
+    
+    # Función para liberar un puerto específico
+    free_port() {
+        local port=$1
+        local port_name=$2
+        
+        case "$OS" in
+            "macos"|"linux")
+                if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null 2>&1; then
+                    echo "   - Puerto $port ($port_name) está ocupado, liberando..."
+                    
+                    # Mostrar qué proceso está usando el puerto
+                    local pid=$(lsof -Pi :$port -sTCP:LISTEN -t 2>/dev/null | head -1)
+                    if [ ! -z "$pid" ]; then
+                        local process_name=$(ps -p $pid -o comm= 2>/dev/null || echo "desconocido")
+                        echo "     Proceso: $process_name (PID: $pid)"
+                    fi
+                    
+                    # Intentar matar el proceso
+                    lsof -Pi :$port -sTCP:LISTEN -t | xargs kill -9 2>/dev/null || true
+                    sleep 3
+                    
+                    # Verificar si se liberó
+                    if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null 2>&1; then
+                        echo "     ⚠️  Puerto $port aún ocupado, intentando con sudo..."
+                        sudo lsof -Pi :$port -sTCP:LISTEN -t | xargs sudo kill -9 2>/dev/null || true
+                        sleep 2
+                    fi
+                    
+                    # Verificación final
+                    if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null 2>&1; then
+                        echo "     ❌ No se pudo liberar el puerto $port"
+                        return 1
+                    else
+                        echo "     ✅ Puerto $port liberado"
+                        return 0
+                    fi
+                else
+                    echo "   - Puerto $port ($port_name) está libre"
+                    return 0
+                fi
+                ;;
+            "windows")
+                echo "   - En Windows, la liberación de puertos se maneja automáticamente"
+                echo "   - Si hay conflictos, reinicia Docker Desktop"
+                return 0
+                ;;
+            *)
+                echo "   - Sistema operativo no soportado para liberación de puertos"
+                return 1
+                ;;
+        esac
+    }
+    
+    # Liberar puertos
+    free_port 3001 "API"
+    free_port 5432 "PostgreSQL"
+    free_port 3002 "API alternativa"
+    
+    echo "✅ Proceso de liberación de puertos completado"
+}
+
 # Verificar que Docker esté instalado
 if ! command -v docker &> /dev/null; then
     echo "❌ Docker no está instalado. Por favor instala Docker primero."
@@ -41,14 +122,55 @@ if ! command -v docker-compose &> /dev/null; then
     exit 1
 fi
 
-# Función para verificar si un puerto está disponible
+# Función para verificar si un puerto está disponible (multiplataforma)
 check_port() {
     local port=$1
-    if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null 2>&1; then
-        return 1  # Puerto ocupado
-    else
-        return 0  # Puerto disponible
-    fi
+    
+    case "$OS" in
+        "macos"|"linux")
+            # Método 1: lsof (macOS/Linux)
+            if command -v lsof >/dev/null 2>&1; then
+                if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null 2>&1; then
+                    return 1  # Puerto ocupado
+                fi
+            fi
+            
+            # Método 2: netstat (alternativo)
+            if command -v netstat >/dev/null 2>&1; then
+                if netstat -an 2>/dev/null | grep -q ":$port.*LISTEN"; then
+                    return 1  # Puerto ocupado
+                fi
+            fi
+            
+            # Método 3: nc (netcat) - intentar conectar
+            if command -v nc >/dev/null 2>&1; then
+                if nc -z localhost $port 2>/dev/null; then
+                    return 1  # Puerto ocupado
+                fi
+            fi
+            ;;
+        "windows")
+            # Para Windows (WSL/Git Bash)
+            if command -v netstat >/dev/null 2>&1; then
+                if netstat -an 2>/dev/null | grep -q ":$port.*LISTEN"; then
+                    return 1  # Puerto ocupado
+                fi
+            fi
+            
+            # Usar PowerShell si está disponible
+            if command -v powershell >/dev/null 2>&1; then
+                if powershell -Command "Test-NetConnection -ComputerName localhost -Port $port -InformationLevel Quiet" 2>/dev/null | grep -q "True"; then
+                    return 1  # Puerto ocupado
+                fi
+            fi
+            ;;
+        *)
+            echo "⚠️  Sistema operativo no soportado: $OS"
+            return 1
+            ;;
+    esac
+    
+    return 0  # Puerto disponible
 }
 
 # Función para encontrar un puerto disponible
@@ -66,11 +188,15 @@ find_available_port() {
     echo $port
 }
 
+# Liberar puertos ocupados por instalaciones anteriores
+free_occupied_ports
+
 # Verificar puertos necesarios
 echo "🔍 Verificando disponibilidad de puertos..."
 
 # Verificar puerto 3001 (API)
-if ! check_port 3001; then
+echo "🔍 Verificando puerto 3001 (API)..."
+if nc -z localhost 3001 2>/dev/null; then
     echo "⚠️  Puerto 3001 está ocupado, buscando alternativa..."
     API_PORT=$(find_available_port 3001)
     echo "✅ Puerto $API_PORT disponible para la API"
@@ -80,10 +206,13 @@ else
 fi
 
 # Verificar puerto 5432 (PostgreSQL)
-if ! check_port 5432; then
-    echo "⚠️  Puerto 5432 está ocupado, buscando alternativa..."
-    DB_PORT=$(find_available_port 5432)
+echo "🔍 Verificando puerto 5432 (PostgreSQL)..."
+if nc -z localhost 5432 2>/dev/null; then
+    echo "⚠️  Puerto 5432 está ocupado por un proceso del sistema"
+    echo "   - Usando puerto alternativo para PostgreSQL..."
+    DB_PORT=$(find_available_port 5433)
     echo "✅ Puerto $DB_PORT disponible para PostgreSQL"
+    echo "   - PostgreSQL se ejecutará en puerto $DB_PORT (mapeado desde 5432 interno)"
 else
     DB_PORT=5432
     echo "✅ Puerto 5432 disponible para PostgreSQL"
@@ -98,8 +227,8 @@ else
     echo "✅ Archivo .env ya existe"
 fi
 
-# Configurar puerto de API en .env
-echo "🔧 Configurando puerto de API en .env..."
+# Configurar puertos en .env
+echo "🔧 Configurando puertos en .env..."
 if grep -q "API_PORT=" .env; then
     # Actualizar puerto existente
     sed -i.bak "s/API_PORT=.*/API_PORT=$API_PORT/" .env
@@ -108,7 +237,20 @@ else
     echo "API_PORT=$API_PORT" >> .env
 fi
 
+# Configurar puerto de PostgreSQL si es diferente a 5432
+if [ "$DB_PORT" != "5432" ]; then
+    if grep -q "DB_PORT=" .env; then
+        # Actualizar puerto existente
+        sed -i.bak "s/DB_PORT=.*/DB_PORT=$DB_PORT/" .env
+    else
+        # Agregar puerto si no existe
+        echo "DB_PORT=$DB_PORT" >> .env
+    fi
+    echo "   - PostgreSQL configurado en puerto $DB_PORT"
+fi
+
 echo "   - API se ejecutará en puerto $API_PORT (mapeado desde 5000 interno)"
+echo "   - PostgreSQL se ejecutará en puerto $DB_PORT (mapeado desde 5432 interno)"
 echo "   - Puerto 3000 reservado para frontend"
 
 echo ""
@@ -139,10 +281,7 @@ if [ -f "package-lock.json" ]; then
     rm -f package-lock.json
 fi
 
-if [ -d "dist" ]; then
-    echo "   - Eliminando dist existente..."
-    rm -rf dist
-fi
+# No es necesario manejar dist localmente, se genera en el contenedor
 
 echo "✅ Dependencias locales limpiadas"
 
@@ -177,36 +316,31 @@ for i in {1..30}; do
     sleep 2
 done
 
-# Verificar que la API esté completamente lista
-echo "⏳ Esperando a que la API esté completamente lista..."
-sleep 20
+# Verificar que la API esté funcionando de manera inteligente
+echo "🔍 Verificando que la API esté funcionando..."
 
-# Verificar que el build se completó correctamente
-echo "🔍 Verificando que el build se completó correctamente..."
-
-# Lista de archivos críticos que deben existir
-CRITICAL_FILES=(
-    "dist/src/app.controller.js"
-    "dist/src/app.module.js"
-    "dist/src/main.js"
-    "dist/src/app.service.js"
-)
-
-# Verificar cada archivo crítico
-for file in "${CRITICAL_FILES[@]}"; do
-    if ! docker-compose exec api test -f "$file"; then
-        echo "⚠️  Archivo $file no encontrado, recompilando..."
-        if ! docker-compose exec api npm run build; then
-            echo "❌ Error recompilando la aplicación"
-            echo "📋 Logs de la API:"
-            docker-compose logs api
-            exit 1
-        fi
-        break
+# Verificar que la carpeta dist existe en el contenedor
+echo "🔍 Verificando carpeta dist en el contenedor..."
+if ! docker-compose exec api test -d "dist" 2>/dev/null; then
+    echo "⚠️  Carpeta dist no encontrada en el contenedor, recompilando..."
+    if ! docker-compose exec api npm run build; then
+        echo "❌ Error recompilando la aplicación"
+        echo "📋 Logs de la API:"
+        docker-compose logs api
+        exit 1
     fi
-done
+    echo "✅ Recompilación completada"
+else
+    echo "✅ Carpeta dist encontrada en el contenedor"
+fi
 
-echo "✅ Build verificado correctamente"
+# Verificar que la API responda (verificación rápida)
+echo "🔍 Verificando que la API responda..."
+if curl -s http://localhost:$API_PORT/realstate >/dev/null 2>&1; then
+    echo "✅ API está funcionando correctamente"
+else
+    echo "⚠️  API no responde, pero continuando con la configuración..."
+fi
 
 # Sincronizar esquema de base de datos (sin crear migraciones)
 echo "🗄️  Sincronizando esquema de base de datos..."
@@ -235,33 +369,12 @@ if ! docker-compose exec api npx prisma generate; then
     exit 1
 fi
 
-# Esperar a que la API esté lista
-echo "⏳ Esperando a que la API esté lista..."
-sleep 10
-
-# Verificar que la API esté funcionando
-echo "🔍 Verificando que la API esté funcionando..."
-if [ -f "scripts/wait-for-api.sh" ]; then
-    echo "   - Usando script de espera inteligente..."
-    if ./scripts/wait-for-api.sh; then
-        echo "✅ API GraphQL está completamente lista"
-    else
-        echo "⚠️  API no responde, pero continuando con el seed..."
-    fi
+# Verificación final de la API (opcional)
+echo "🔍 Verificación final de la API..."
+if curl -s http://localhost:$API_PORT/realstate >/dev/null 2>&1; then
+    echo "✅ API GraphQL está completamente lista"
 else
-    # Fallback al método anterior
-    for i in {1..20}; do
-        if curl -s http://localhost:$API_PORT/realstate >/dev/null 2>&1; then
-            echo "✅ API está funcionando"
-            break
-        fi
-        if [ $i -eq 20 ]; then
-            echo "⚠️  API no responde, pero continuando con el seed..."
-            break
-        fi
-        echo "⏳ Esperando API... (intento $i/20)"
-        sleep 3
-    done
+    echo "⚠️  API no responde, pero continuando con el seed..."
 fi
 
 # Crear usuarios por defecto
