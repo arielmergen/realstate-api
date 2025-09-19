@@ -8,17 +8,37 @@ services:
       POSTGRES_DB: realstate_db
       POSTGRES_USER: realstate
       POSTGRES_PASSWORD: realstate123
+      # Configuración de performance
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
     ports:
       - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - realstate-network
+    command: >
+      postgres
+      -c max_connections=100
+      -c shared_buffers=256MB
+      -c work_mem=4MB
+      -c maintenance_work_mem=64MB
+      -c effective_cache_size=1GB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U realstate -d realstate_db"]
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
 
   api:
     build: .
@@ -26,7 +46,7 @@ services:
     ports:
       - "${API_PORT:-3002}:5000"
     environment:
-      - DATABASE_URL=postgresql://realstate:realstate123@postgres:5432/realstate_db
+      - DATABASE_URL=postgresql://realstate:realstate123@postgres:5432/realstate_db?connection_limit=10&pool_timeout=20
       - JWT_SECRET=realstate-local-secret-key-2024
       - TOKEN_VALIDITY_TIME=24
       - TOKEN_VALIDITY_UNITS=h
@@ -37,6 +57,8 @@ services:
       - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
       - PORT=5000
       - NODE_ENV=development
+      # Configuración de Node.js para mejor rendimiento
+      - NODE_OPTIONS=--max-old-space-size=512
     depends_on:
       postgres:
         condition: service_healthy
@@ -49,10 +71,18 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health-check"]
-      interval: 30s
+      interval: 15s
       timeout: 10s
       retries: 3
       start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
 
 volumes:
   postgres_data:

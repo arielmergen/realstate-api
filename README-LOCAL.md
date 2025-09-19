@@ -386,6 +386,7 @@ SELECT 'Propietarios', count(*) FROM \"Owner\";
 
 ## 📋 Comandos Útiles
 
+### 🔧 **Comandos Básicos**
 ```bash
 # Ver logs
 docker-compose logs -f api
@@ -402,6 +403,215 @@ docker-compose exec postgres psql -U realstate -d realstate_db
 # Recrear usuarios por defecto
 docker-compose exec api npm run db:seed
 ```
+
+### 🛠️ **Scripts de Diagnóstico y Monitoreo**
+
+#### **Diagnóstico Completo**
+```bash
+# Ejecutar diagnóstico completo del sistema
+./scripts/diagnostico-api.sh
+```
+*Verifica: Docker, contenedores, puertos, conectividad, logs, recursos, base de datos, configuración*
+
+#### **Monitoreo en Tiempo Real**
+```bash
+# Monitoreo continuo (cada 30 segundos)
+./scripts/monitoreo-continuo.sh
+
+# Monitoreo más frecuente (cada 10 segundos)
+./scripts/monitoreo-continuo.sh 10
+```
+*Monitorea: API, health checks, memoria, CPU, errores, conexiones de BD, espacio en disco*
+
+#### **Reinicio Inteligente**
+```bash
+# Reinicio automático basado en el estado del sistema
+./scripts/reinicio-inteligente.sh
+```
+*Decide automáticamente entre reinicio suave o completo según: uso de memoria, errores, estado de la API*
+
+#### **Aplicar Mejoras de Estabilidad**
+```bash
+# Aplicar todas las mejoras de estabilidad automáticamente
+./scripts/aplicar-mejoras.sh
+```
+*Incluye: configuración optimizada, límites de recursos, monitoreo mejorado, health checks*
+
+### 🌐 **Endpoints de Monitoreo**
+
+#### **Health Check Detallado**
+```bash
+# Estado de salud completo
+curl http://localhost:3001/health-check | jq .
+
+# Respuesta esperada:
+# {
+#   "status": "ok",
+#   "uptime": 1234.56,
+#   "memory": {
+#     "used": 31,
+#     "total": 35,
+#     "percentage": 89
+#   },
+#   "timestamp": "2025-09-19T04:43:07.620Z"
+# }
+```
+
+#### **Métricas del Sistema**
+```bash
+# Métricas detalladas de rendimiento
+curl http://localhost:3001/metrics | jq .
+
+# Respuesta esperada:
+# {
+#   "uptime": 1234.56,
+#   "memory": {
+#     "rss": 80,
+#     "heapTotal": 35,
+#     "heapUsed": 31,
+#     "external": 1
+#   },
+#   "cpu": {
+#     "user": 1045879,
+#     "system": 283133
+#   },
+#   "timestamp": "2025-09-19T04:43:14.586Z",
+#   "nodeVersion": "v16.20.2",
+#   "platform": "linux"
+# }
+```
+
+#### **Estado Básico**
+```bash
+# Estado simple del servicio
+curl http://localhost:3001/status | jq .
+
+# Respuesta esperada:
+# {
+#   "status": "ok",
+#   "uptime": 1234.56,
+#   "timestamp": "2025-09-19T04:43:23.855Z",
+#   "service": "realstate-api"
+# }
+```
+
+### 🔍 **Comandos de Verificación Rápida**
+
+#### **Verificar Estado General**
+```bash
+# Estado de contenedores
+docker-compose ps
+
+# Uso de recursos
+docker stats --no-stream realstate-api realstate-postgres
+
+# Verificar puertos
+lsof -i :3001
+lsof -i :5433
+```
+
+#### **Verificar Conectividad**
+```bash
+# Probar GraphQL (debe mostrar "GET query missing")
+curl http://localhost:3001/realstate
+
+# Probar health check
+curl http://localhost:3001/health-check
+
+# Probar métricas
+curl http://localhost:3001/metrics
+```
+
+#### **Verificar Base de Datos**
+```bash
+# Conexiones activas
+docker-compose exec postgres psql -U realstate -d realstate_db -c "SELECT count(*) FROM pg_stat_activity WHERE state = 'active';"
+
+# Estado de la base de datos
+docker-compose exec postgres pg_isready -U realstate -d realstate_db
+
+# Ver usuarios
+docker-compose exec postgres psql -U realstate -d realstate_db -c "SELECT email, \"firstName\", \"lastName\" FROM \"User\";"
+```
+
+### 🚨 **Comandos de Emergencia**
+
+#### **Si la API no responde**
+```bash
+# 1. Diagnóstico rápido
+./scripts/diagnostico-api.sh
+
+# 2. Reinicio inteligente
+./scripts/reinicio-inteligente.sh
+
+# 3. Si persiste, reinicio completo
+docker-compose down && docker-compose up -d
+```
+
+#### **Si hay problemas de memoria**
+```bash
+# Ver uso actual
+docker stats realstate-api
+
+# Reinicio inteligente (decide automáticamente)
+./scripts/reinicio-inteligente.sh
+
+# Reinicio completo si es necesario
+docker-compose down -v && docker-compose up -d
+```
+
+#### **Si hay errores en logs**
+```bash
+# Ver errores recientes
+docker-compose logs --tail=50 api | grep -i error
+
+# Ver logs en tiempo real
+docker-compose logs -f api
+
+# Limpiar logs y reiniciar
+docker-compose down && docker-compose up -d
+```
+
+### 📊 **Comandos de Análisis**
+
+#### **Análisis de Rendimiento**
+```bash
+# Monitoreo continuo por 5 minutos
+timeout 300 ./scripts/monitoreo-continuo.sh 10
+
+# Ver logs de rendimiento
+docker-compose logs api | grep -E "(memory|cpu|performance)"
+
+# Análisis de conexiones de BD
+docker-compose exec postgres psql -U realstate -d realstate_db -c "
+SELECT 
+  state,
+  count(*) as connections,
+  max(now() - query_start) as max_duration
+FROM pg_stat_activity 
+WHERE datname = 'realstate_db'
+GROUP BY state;
+"
+```
+
+#### **Análisis de Errores**
+```bash
+# Contar errores por tipo
+docker-compose logs api | grep -i error | sort | uniq -c | sort -nr
+
+# Errores de las últimas 24 horas
+docker-compose logs --since 24h api | grep -i error
+
+# Errores de GraphQL específicamente
+docker-compose logs api | grep -i "graphql\|apollo"
+```
+
+### 💡 **Tips de Uso**
+
+- **Para desarrollo diario**: Usa `./scripts/diagnostico-api.sh` para verificar que todo esté bien
+- **Para monitoreo continuo**: Usa `./scripts/monitoreo-continuo.sh` durante pruebas intensivas
+- **Para problemas**: Usa `./scripts/reinicio-inteligente.sh` antes de hacer reinicio manual
+- **Para actualizaciones**: Usa `./scripts/aplicar-mejoras.sh` cuando se publiquen nuevas mejoras
 
 ## 🔧 Solución de Problemas
 

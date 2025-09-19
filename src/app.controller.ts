@@ -10,7 +10,22 @@ export class AppController {
   }
 
   @Get('health-check')
-  getHealthCheck(): number {
-    return this.appService.getUptime(this.start);
+  getHealthCheck() {
+    return this.appService.getHealthStatus();
+  }
+
+  @Get('metrics')
+  getMetrics() {
+    return this.appService.getMetrics();
+  }
+
+  @Get('status')
+  getStatus() {
+    return {
+      status: 'ok',
+      uptime: this.appService.getUptime(this.start),
+      timestamp: new Date().toISOString(),
+      service: 'realstate-api',
+    };
   }
 }

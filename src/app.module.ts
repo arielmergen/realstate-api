@@ -50,18 +50,23 @@ import { HomeModule } from './resources/page-home/home.module';
           },
         },
       },
-      /*formatError: (error) => {
+      formatError: (error) => {
+        console.error('GraphQL Error:', error);
         const graphQLFormattedError = {
           message: error.message,
           code: error.extensions?.code || 'SERVER_ERROR',
           name: error.name,
         };
         return graphQLFormattedError;
-      },*/
+      },
       cors: {
         origin: true,
         credentials: true,
       },
+      // Configuración de timeouts y límites
+      context: ({ req }) => ({ req }),
+      cache: 'bounded',
+      persistedQueries: false,
     }),
     PropertiesModule,
     AmenitiesModule,
