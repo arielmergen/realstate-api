@@ -127,12 +127,31 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 1
 fi
 
+# Limpiar dependencias locales para evitar problemas de arquitectura
+echo "🧹 Limpiando dependencias locales..."
+if [ -d "node_modules" ]; then
+    echo "   - Eliminando node_modules existente..."
+    rm -rf node_modules
+fi
+
+if [ -f "package-lock.json" ]; then
+    echo "   - Eliminando package-lock.json existente..."
+    rm -f package-lock.json
+fi
+
+if [ -d "dist" ]; then
+    echo "   - Eliminando dist existente..."
+    rm -rf dist
+fi
+
+echo "✅ Dependencias locales limpiadas"
+
 # Verificar y limpiar solo contenedores específicos de RealState
 clean_realstate_containers
 
 # Construir y ejecutar contenedores
 echo "🔨 Construyendo contenedores..."
-docker-compose build
+docker-compose build --no-cache
 
 echo "🚀 Iniciando servicios..."
 docker-compose up -d
@@ -222,18 +241,28 @@ sleep 10
 
 # Verificar que la API esté funcionando
 echo "🔍 Verificando que la API esté funcionando..."
-for i in {1..20}; do
-    if curl -s http://localhost:$API_PORT/realstate >/dev/null 2>&1; then
-        echo "✅ API está funcionando"
-        break
-    fi
-    if [ $i -eq 20 ]; then
+if [ -f "scripts/wait-for-api.sh" ]; then
+    echo "   - Usando script de espera inteligente..."
+    if ./scripts/wait-for-api.sh; then
+        echo "✅ API GraphQL está completamente lista"
+    else
         echo "⚠️  API no responde, pero continuando con el seed..."
-        break
     fi
-    echo "⏳ Esperando API... (intento $i/20)"
-    sleep 3
-done
+else
+    # Fallback al método anterior
+    for i in {1..20}; do
+        if curl -s http://localhost:$API_PORT/realstate >/dev/null 2>&1; then
+            echo "✅ API está funcionando"
+            break
+        fi
+        if [ $i -eq 20 ]; then
+            echo "⚠️  API no responde, pero continuando con el seed..."
+            break
+        fi
+        echo "⏳ Esperando API... (intento $i/20)"
+        sleep 3
+    done
+fi
 
 # Crear usuarios por defecto
 echo "👥 Creando datos completos del sistema..."
