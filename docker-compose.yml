@@ -46,7 +46,7 @@ services:
     ports:
       - "${API_PORT:-3002}:5000"
     environment:
-      - DATABASE_URL=postgresql://realstate:realstate123@postgres:5432/realstate_db?connection_limit=10&pool_timeout=20
+      - DATABASE_URL=postgresql://realstate:realstate123@postgres:5432/realstate_db?connection_limit=20&pool_timeout=30&idle_timeout=300
       - JWT_SECRET=realstate-local-secret-key-2024
       - TOKEN_VALIDITY_TIME=24
       - TOKEN_VALIDITY_UNITS=h
@@ -57,24 +57,32 @@ services:
       - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
       - PORT=5000
       - NODE_ENV=development
-      # Configuración de Node.js para mejor rendimiento y estabilidad
-      - NODE_OPTIONS=--max-old-space-size=768
+      # Configuración optimizada de Node.js
+      - NODE_OPTIONS=--max-old-space-size=768 --max-http-header-size=16384
+      # Variables adicionales para estabilidad
+      - UV_THREADPOOL_SIZE=4
+      - NODE_MAX_CONCURRENT_CONNECTIONS=1000
     depends_on:
       postgres:
         condition: service_healthy
     volumes:
       - .:/app
       - /app/node_modules
+      # Volume para logs
+      - ./logs:/app/logs
     networks:
       - realstate-network
-    command: /app/scripts/smart-restart.sh
-    restart: unless-stopped
+    # Comando simplificado - sin script personalizado
+    command: npm run start:dev
+    # Política de reinicio más controlada
+    restart: on-failure:3
+    # Health check optimizado
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health-check"]
-      interval: 30s
-      timeout: 15s
-      retries: 5
-      start_period: 120s
+      test: ["CMD", "curl", "-f", "--max-time", "5", "http://localhost:5000/health-check"]
+      interval: 20s
+      timeout: 8s
+      retries: 3
+      start_period: 60s
     deploy:
       resources:
         limits:
@@ -83,6 +91,13 @@ services:
         reservations:
           memory: 512M
           cpus: '0.5'
+    # Configuración adicional para estabilidad
+    stop_grace_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   postgres_data:
@@ -90,3 +105,5 @@ volumes:
 networks:
   realstate-network:
     driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: realstate-br0
