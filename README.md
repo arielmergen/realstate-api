@@ -112,7 +112,7 @@ chmod +x setup-local.sh
 ```
 
 ### **¡Listo!** 🎉
-- **API GraphQL**: http://localhost:3001/realstate (puerto automático si 3001 está ocupado)
+- **API GraphQL**: http://localhost:3002/api/v1/graphql (puerto automático si 3002 está ocupado)
 - **Base de datos**: localhost:5432
 - **57+ registros** creados automáticamente
 - **Puerto 3000 reservado** para tu aplicación frontend
@@ -130,7 +130,7 @@ docker-compose down
 ```
 
 ### **🔧 Configuración de Puertos**
-- **API**: Puerto 3001+ (externo) → 8000 (interno)
+- **API**: Puerto 3002 (externo) → 5000 (interno)
 - **Frontend**: Puerto 3000 (reservado)
 - **PostgreSQL**: Puerto 5432
 
@@ -154,7 +154,7 @@ docker-compose down
 
 | **Servicio** | **URL** | **Descripción** |
 |--------------|---------|-----------------|
-| **API GraphQL** | http://localhost:3001/realstate | Endpoint principal de la API |
+| **API GraphQL** | http://localhost:3002/api/v1/graphql | Endpoint principal de la API |
 | **Frontend** | http://localhost:3000 | Interfaz de usuario (reservado) |
 | **Base de Datos** | localhost:5432 | PostgreSQL directo |
 

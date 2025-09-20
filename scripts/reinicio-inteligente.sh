@@ -28,14 +28,14 @@ show_status() {
 }
 
 # Obtener puerto de la API
-API_PORT=$(grep "API_PORT=" .env 2>/dev/null | cut -d'=' -f2 || echo "3001")
+API_PORT=$(grep "API_PORT=" .env 2>/dev/null | cut -d'=' -f2 || echo "3002")
 
 # 1. Verificar estado actual de la API
 echo "🔍 VERIFICANDO ESTADO ACTUAL..."
 echo "-------------------------------"
 
 API_RESPONDING=false
-if curl -s -f http://localhost:$API_PORT/realstate >/dev/null 2>&1; then
+if curl -s -f http://localhost:$API_PORT/api/v1/graphql >/dev/null 2>&1; then
     show_status "OK" "API está respondiendo correctamente"
     API_RESPONDING=true
 else
@@ -141,7 +141,7 @@ SUCCESS_COUNT=0
 MAX_ATTEMPTS=10
 
 for i in $(seq 1 $MAX_ATTEMPTS); do
-    if curl -s -f http://localhost:$API_PORT/realstate >/dev/null 2>&1; then
+    if curl -s -f http://localhost:$API_PORT/api/v1/graphql >/dev/null 2>&1; then
         SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
         if [ $SUCCESS_COUNT -ge 3 ]; then
             show_status "OK" "API está respondiendo correctamente después del reinicio"
@@ -170,7 +170,7 @@ else
     echo "===================="
     echo ""
     echo "🌐 URLs disponibles:"
-    echo "   - GraphQL: http://localhost:$API_PORT/realstate"
+    echo "   - GraphQL: http://localhost:$API_PORT/api/v1/graphql"
     echo "   - Health Check: http://localhost:$API_PORT/health-check"
     echo ""
     echo "📊 Estado actual:"

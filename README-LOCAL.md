@@ -200,7 +200,7 @@ Datasource "db": PostgreSQL database "realstate_db", schema "public" at "postgre
 ✅ ¡Configuración completada!
 
 �� URLs disponibles:
-   - API GraphQL: http://localhost:3001/realstate
+   - API GraphQL: http://localhost:3002/api/v1/graphql
    - Frontend: http://localhost:3000 (reservado para tu aplicación frontend)
    - Base de datos: localhost:5432
 
@@ -250,7 +250,7 @@ chmod +x setup-local.sh
 #### ✅ **¿Cómo saber que funcionó perfectamente?**
 
 1. **Verás el mensaje final**: "🎉 ¡La API RealState está lista para usar!"
-2. **Abre tu navegador** en: http://localhost:3001/realstate
+2. **Abre tu navegador** en: http://localhost:3002/api/v1/graphql
 3. **Deberías ver** una página con documentación de GraphQL
 4. **No debe haber errores** en rojo en la terminal
 5. **Verás la tabla de usuarios** creados automáticamente
@@ -265,7 +265,7 @@ docker-compose ps
 docker-compose logs api
 
 # Probar la API
-curl http://localhost:3001/realstate
+curl http://localhost:3002/api/v1/graphql
 
 # Ver usuarios creados
 docker-compose exec postgres psql -U realstate -d realstate_db -c "SELECT email, \"firstName\", \"lastName\" FROM \"User\";"
@@ -313,7 +313,7 @@ La API viene con **4 usuarios de prueba** listos para usar:
 ### **¿Cómo usar estos usuarios?**
 
 **1. En GraphQL Playground:**
-- Ve a http://localhost:3001/realstate
+- Ve a http://localhost:3002/api/v1/graphql
 - Usa cualquiera de los emails/passwords de arriba
 
 **2. En tu aplicación frontend:**
@@ -379,7 +379,7 @@ SELECT 'Propietarios', count(*) FROM \"Owner\";
 
 ## ✅ Verificación
 
-- **API GraphQL**: http://localhost:3001/realstate
+- **API GraphQL**: http://localhost:3002/api/v1/graphql
 - **Frontend**: http://localhost:3000 (reservado para tu aplicación frontend)
 - **Base de datos**: localhost:5432
 - **Logs**: `docker-compose logs -f api`
@@ -442,7 +442,7 @@ docker-compose exec api npm run db:seed
 #### **Health Check Detallado**
 ```bash
 # Estado de salud completo
-curl http://localhost:3001/health-check | jq .
+curl http://localhost:3002/health-check | jq .
 
 # Respuesta esperada:
 # {
@@ -460,7 +460,7 @@ curl http://localhost:3001/health-check | jq .
 #### **Métricas del Sistema**
 ```bash
 # Métricas detalladas de rendimiento
-curl http://localhost:3001/metrics | jq .
+curl http://localhost:3002/metrics | jq .
 
 # Respuesta esperada:
 # {
@@ -484,7 +484,7 @@ curl http://localhost:3001/metrics | jq .
 #### **Estado Básico**
 ```bash
 # Estado simple del servicio
-curl http://localhost:3001/status | jq .
+curl http://localhost:3002/status | jq .
 
 # Respuesta esperada:
 # {
@@ -506,20 +506,20 @@ docker-compose ps
 docker stats --no-stream realstate-api realstate-postgres
 
 # Verificar puertos
-lsof -i :3001
+lsof -i :3002
 lsof -i :5433
 ```
 
 #### **Verificar Conectividad**
 ```bash
 # Probar GraphQL (debe mostrar "GET query missing")
-curl http://localhost:3001/realstate
+curl http://localhost:3002/api/v1/graphql
 
 # Probar health check
-curl http://localhost:3001/health-check
+curl http://localhost:3002/health-check
 
 # Probar métricas
-curl http://localhost:3001/metrics
+curl http://localhost:3002/metrics
 ```
 
 #### **Verificar Base de Datos**
@@ -651,6 +651,6 @@ Ver `documents/plan-implementacion-local.md` para documentación detallada.
 
 1. Configurar credenciales de Cloudinary
 2. Ejecutar `./setup-local.sh`
-3. Probar la API en http://localhost:3001/realstate
+3. Probar la API en http://localhost:3002/api/v1/graphql
 4. **¡Usar los usuarios por defecto para probar!**
 5. ¡Comenzar a desarrollar!

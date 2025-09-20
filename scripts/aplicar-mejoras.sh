@@ -124,7 +124,7 @@ done
 
 # Verificar API
 echo "Verificando API..."
-API_PORT=$(grep "API_PORT=" .env 2>/dev/null | cut -d'=' -f2 || echo "3001")
+API_PORT=$(grep "API_PORT=" .env 2>/dev/null | cut -d'=' -f2 || echo "3002")
 for i in {1..20}; do
     if curl -s -f http://localhost:$API_PORT/health-check >/dev/null 2>&1; then
         show_status "OK" "API está respondiendo"
@@ -204,7 +204,7 @@ echo ""
 # 11. Mostrar URLs y comandos útiles
 echo "🌐 URLs DISPONIBLES"
 echo "==================="
-echo "   - GraphQL: http://localhost:$API_PORT/realstate"
+echo "   - GraphQL: http://localhost:$API_PORT/api/v1/graphql"
 echo "   - Health Check: http://localhost:$API_PORT/health-check"
 echo "   - Métricas: http://localhost:$API_PORT/metrics"
 echo "   - Status: http://localhost:$API_PORT/status"
@@ -222,7 +222,7 @@ echo ""
 # 12. Verificación final
 echo "🎯 VERIFICACIÓN FINAL"
 echo "====================="
-if curl -s -f http://localhost:$API_PORT/realstate >/dev/null 2>&1; then
+if curl -s -f http://localhost:$API_PORT/api/v1/graphql >/dev/null 2>&1; then
     show_status "OK" "¡API funcionando correctamente con todas las mejoras!"
     echo ""
     echo "🎉 ¡MEJORAS APLICADAS EXITOSAMENTE!"

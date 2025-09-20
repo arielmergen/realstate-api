@@ -104,7 +104,7 @@ free_occupied_ports() {
     }
     
     # Liberar puertos
-    free_port 3001 "API"
+    free_port 3002 "API"
     free_port 5432 "PostgreSQL"
     free_port 3002 "API alternativa"
     
@@ -194,15 +194,15 @@ free_occupied_ports
 # Verificar puertos necesarios
 echo "🔍 Verificando disponibilidad de puertos..."
 
-# Verificar puerto 3001 (API)
-echo "🔍 Verificando puerto 3001 (API)..."
-if nc -z localhost 3001 2>/dev/null; then
-    echo "⚠️  Puerto 3001 está ocupado, buscando alternativa..."
-    API_PORT=$(find_available_port 3001)
+# Verificar puerto 3002 (API)
+echo "🔍 Verificando puerto 3002 (API)..."
+if nc -z localhost 3002 2>/dev/null; then
+    echo "⚠️  Puerto 3002 está ocupado, buscando alternativa..."
+    API_PORT=$(find_available_port 3002)
     echo "✅ Puerto $API_PORT disponible para la API"
 else
-    API_PORT=3001
-    echo "✅ Puerto 3001 disponible para la API"
+    API_PORT=3002
+    echo "✅ Puerto 3002 disponible para la API"
 fi
 
 # Verificar puerto 5432 (PostgreSQL)
@@ -336,7 +336,7 @@ fi
 
 # Verificar que la API responda (verificación rápida)
 echo "🔍 Verificando que la API responda..."
-if curl -s http://localhost:$API_PORT/realstate >/dev/null 2>&1; then
+if curl -s http://localhost:$API_PORT/api/v1/graphql >/dev/null 2>&1; then
     echo "✅ API está funcionando correctamente"
 else
     echo "⚠️  API no responde, pero continuando con la configuración..."
@@ -371,7 +371,7 @@ fi
 
 # Verificación final de la API (opcional)
 echo "🔍 Verificación final de la API..."
-if curl -s http://localhost:$API_PORT/realstate >/dev/null 2>&1; then
+if curl -s http://localhost:$API_PORT/api/v1/graphql >/dev/null 2>&1; then
     echo "✅ API GraphQL está completamente lista"
 else
     echo "⚠️  API no responde, pero continuando con el seed..."
@@ -393,7 +393,7 @@ sleep 10
 # Verificar que la API responda correctamente
 echo "⏳ Verificando que la API responda correctamente..."
 for i in {1..10}; do
-    if curl -s http://localhost:$API_PORT/realstate >/dev/null 2>&1; then
+    if curl -s http://localhost:$API_PORT/api/v1/graphql >/dev/null 2>&1; then
         echo "✅ API GraphQL está funcionando correctamente"
         break
     fi
@@ -410,7 +410,7 @@ echo ""
 echo "✅ ¡Configuración completada!"
 echo ""
 echo "🌐 URLs disponibles:"
-echo "   - API GraphQL: http://localhost:$API_PORT/realstate"
+echo "   - API GraphQL: http://localhost:$API_PORT/api/v1/graphql"
 echo "   - Frontend: http://localhost:3000 (reservado para tu aplicación frontend)"
 echo "   - Base de datos: localhost:5432"
 echo ""

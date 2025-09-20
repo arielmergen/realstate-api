@@ -290,11 +290,11 @@ docker stats --no-stream realstate-api
 
 # Verificar conexiones de red
 echo "🌐 Conexiones de red:"
-netstat -an | grep :3001
+netstat -an | grep :3002
 
 # Verificar health check
 echo "🏥 Health check:"
-curl -f http://localhost:3001/health-check || echo "❌ Health check falló"
+curl -f http://localhost:3002/health-check || echo "❌ Health check falló"
 ```
 
 ### **Script de Reinicio Inteligente**
@@ -328,7 +328,7 @@ fi
 docker-compose logs -f api
 
 # Verificar estado cada 30 segundos
-watch -n 30 'docker-compose ps && curl -s http://localhost:3001/health-check'
+watch -n 30 'docker-compose ps && curl -s http://localhost:3002/health-check'
 
 # Verificar uso de recursos
 watch -n 10 'docker stats --no-stream realstate-api realstate-postgres'

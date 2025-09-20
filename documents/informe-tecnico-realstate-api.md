@@ -132,7 +132,7 @@ sequenceDiagram
 
 ### Endpoint Principal
 ```
-http://localhost:3001/realstate
+http://localhost:3002/api/v1/graphql
 ```
 
 ### Queries Principales
@@ -479,7 +479,7 @@ npm run build
 ## 📚 Documentación API
 
 ### GraphQL Playground
-- **URL**: http://localhost:3001/realstate
+- **URL**: http://localhost:3002/api/v1/graphql
 - **Autenticación**: Bearer token en headers
 - **Schema**: Auto-generado desde código
 

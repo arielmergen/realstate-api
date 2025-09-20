@@ -20,7 +20,7 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
   
   console.log(`🚀 API RealState ejecutándose en puerto ${port}`);
-  console.log(`📊 GraphQL Playground: http://localhost:${port}/realstate`);
+  console.log(`📊 GraphQL Playground: http://localhost:${port}/api/v1/graphql`);
   console.log(`🏥 Health Check: http://localhost:${port}/health-check`);
 }
 bootstrap();

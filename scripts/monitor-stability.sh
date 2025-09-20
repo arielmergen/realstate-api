@@ -37,7 +37,7 @@ while true; do
         sleep 60
         
         # Verificar que esté funcionando
-        if curl -f http://localhost:3001/health-check > /dev/null 2>&1; then
+        if curl -f http://localhost:3002/health-check > /dev/null 2>&1; then
             echo "✅ $(date): Contenedor reiniciado exitosamente"
         else
             echo "❌ $(date): Error al reiniciar contenedor"
@@ -47,7 +47,7 @@ while true; do
     fi
     
     # Verificar conectividad
-    if ! curl -f http://localhost:3001/health-check > /dev/null 2>&1; then
+    if ! curl -f http://localhost:3002/health-check > /dev/null 2>&1; then
         echo "❌ $(date): API no responde. Reiniciando..."
         docker-compose restart api
         sleep 30

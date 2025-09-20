@@ -135,7 +135,7 @@ docker-compose logs -f postgres
 ```
 
 #### 5.2 Probar Endpoints
-- **API GraphQL**: http://localhost:3001/realstate
+- **API GraphQL**: http://localhost:3002/api/v1/graphql
 - **Frontend**: http://localhost:3000 (reservado para tu aplicación)
 - **Base de datos**: localhost:5432
 
@@ -321,7 +321,7 @@ docker system df
 
 ## 🚀 URLs Importantes
 
-- **API GraphQL**: http://localhost:3001/realstate
+- **API GraphQL**: http://localhost:3002/api/v1/graphql
 - **Frontend**: http://localhost:3000 (reservado para tu aplicación frontend)
 - **Base de Datos**: localhost:5432
 - **Cloudinary Dashboard**: https://cloudinary.com/console
@@ -339,7 +339,7 @@ docker system df
 
 1. **Configurar Cloudinary** con tus credenciales
 2. **Ejecutar** `./setup-local.sh`
-3. **Probar** la API en http://localhost:3001/realstate
+3. **Probar** la API en http://localhost:3002/api/v1/graphql
 4. **Crear** usuario administrador
 5. **¡Comenzar** a desarrollar!
 

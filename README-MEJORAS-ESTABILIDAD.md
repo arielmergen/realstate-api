@@ -84,16 +84,16 @@ docker-compose up -d
 ### Endpoints de Monitoreo
 ```bash
 # Health check detallado
-curl http://localhost:3001/health-check
+curl http://localhost:3002/health-check
 
 # Métricas del sistema
-curl http://localhost:3001/metrics
+curl http://localhost:3002/metrics
 
 # Estado básico
-curl http://localhost:3001/status
+curl http://localhost:3002/status
 
 # GraphQL (verificar que funciona)
-curl http://localhost:3001/realstate
+curl http://localhost:3002/realstate
 ```
 
 ### Reinicio Inteligente
@@ -131,7 +131,7 @@ docker stats realstate-api realstate-postgres
 df -h
 
 # Conexiones de red
-netstat -an | grep :3001
+netstat -an | grep :3002
 ```
 
 ### 4. **Verificar Base de Datos**
@@ -222,7 +222,7 @@ docker-compose down && docker-compose up -d
 ### Problema: Alto uso de memoria
 ```bash
 # 1. Verificar métricas
-curl http://localhost:3001/metrics
+curl http://localhost:3002/metrics
 
 # 2. Reinicio si es necesario
 ./scripts/reinicio-inteligente.sh
@@ -254,7 +254,7 @@ Si continúas experimentando problemas después de aplicar estas mejoras:
 
 3. **Verifica las métricas**:
    ```bash
-   curl http://localhost:3001/metrics | jq
+   curl http://localhost:3002/metrics | jq
    ```
 
 4. **Contacta al equipo de desarrollo** con:

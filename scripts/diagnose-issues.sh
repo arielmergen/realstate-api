@@ -39,7 +39,7 @@ else
 fi
 
 echo -n "  - GraphQL endpoint: "
-if curl -f -s -X POST http://localhost:3001/realstate -H "Content-Type: application/json" -d '{"query":"query { __schema { types { name } } }"}' > /dev/null 2>&1; then
+if curl -f -s -X POST http://localhost:3002/api/v1/graphql -H "Content-Type: application/json" -d '{"query":"query { __schema { types { name } } }"}' > /dev/null 2>&1; then
     echo "✅ OK"
 else
     echo "❌ FALLO"

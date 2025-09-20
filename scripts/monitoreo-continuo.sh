@@ -9,7 +9,7 @@ echo ""
 
 # Configuración
 INTERVAL=${1:-30}  # Intervalo por defecto: 30 segundos
-API_PORT=$(grep "API_PORT=" .env 2>/dev/null | cut -d'=' -f2 || echo "3001")
+API_PORT=$(grep "API_PORT=" .env 2>/dev/null | cut -d'=' -f2 || echo "3002")
 LOG_FILE="monitoring.log"
 
 # Colores para output
@@ -43,7 +43,7 @@ show_status() {
 
 # Función para verificar API
 check_api() {
-    if curl -s -f http://localhost:$API_PORT/realstate >/dev/null 2>&1; then
+    if curl -s -f http://localhost:$API_PORT/api/v1/graphql >/dev/null 2>&1; then
         return 0
     else
         return 1

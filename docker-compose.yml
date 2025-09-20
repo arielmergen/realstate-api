@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: realstate-postgres
+    container_name: real-estate-postgres
     environment:
       POSTGRES_DB: realstate_db
       POSTGRES_USER: realstate
@@ -15,7 +15,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - realstate-network
+      - real-estate-network
     command: >
       postgres
       -c max_connections=100
@@ -44,9 +44,9 @@ services:
     build: .
     container_name: realstate-api
     ports:
-      - "${API_PORT:-3002}:5000"
+      - "3002:5000"
     environment:
-      - DATABASE_URL=postgresql://realstate:realstate123@postgres:5432/realstate_db?connection_limit=20&pool_timeout=30&idle_timeout=300
+      - DATABASE_URL=postgresql://realstate:realstate123@postgres:5432/realstate_db?connection_limit=30&pool_timeout=60&idle_timeout=600&connect_timeout=10
       - JWT_SECRET=realstate-local-secret-key-2024
       - TOKEN_VALIDITY_TIME=24
       - TOKEN_VALIDITY_UNITS=h
@@ -58,10 +58,13 @@ services:
       - PORT=5000
       - NODE_ENV=development
       # Configuración optimizada de Node.js
-      - NODE_OPTIONS=--max-old-space-size=768 --max-http-header-size=16384
+      - NODE_OPTIONS=--max-old-space-size=1024 --max-http-header-size=16384
       # Variables adicionales para estabilidad
-      - UV_THREADPOOL_SIZE=4
-      - NODE_MAX_CONCURRENT_CONNECTIONS=1000
+      - UV_THREADPOOL_SIZE=8
+      - NODE_MAX_CONCURRENT_CONNECTIONS=2000
+      # Keep-alive settings
+      - HTTP_KEEP_ALIVE_TIMEOUT=65000
+      - HTTP_HEADERS_TIMEOUT=66000
     depends_on:
       postgres:
         condition: service_healthy
@@ -71,8 +74,8 @@ services:
       # Volume para logs
       - ./logs:/app/logs
     networks:
-      - realstate-network
-    # Comando simplificado - sin script personalizado
+      - real-estate-network
+    # Comando simplificado
     command: npm run start:dev
     # Política de reinicio más controlada
     restart: on-failure:3
@@ -86,11 +89,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
-          cpus: '1.0'
+          memory: 1.5G
+          cpus: '1.5'
         reservations:
-          memory: 512M
-          cpus: '0.5'
+          memory: 768M
+          cpus: '0.75'
     # Configuración adicional para estabilidad
     stop_grace_period: 30s
     logging:
@@ -103,7 +106,7 @@ volumes:
   postgres_data:
 
 networks:
-  realstate-network:
+  real-estate-network:
     driver: bridge
     driver_opts:
-      com.docker.network.bridge.name: realstate-br0
+      com.docker.network.bridge.name: real-estate-br0

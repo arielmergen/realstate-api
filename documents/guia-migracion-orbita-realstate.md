@@ -22,7 +22,7 @@ Este documento detalla la configuración completa de la **API RealState**, una s
 ### URLs del Sistema
 | **Componente** | **URL** |
 |---------------|---------|
-| **API GraphQL** | http://localhost:3001/realstate |
+| **API GraphQL** | http://localhost:3002/api/v1/graphql |
 | **Frontend** | http://localhost:3000 (reservado) |
 | **Base de Datos** | localhost:5432 |
 
@@ -61,7 +61,7 @@ services:
     build: .
     container_name: realstate-api
     ports:
-      - "3001:3000"
+      - "3002:5000"
     environment:
       - DATABASE_URL=postgresql://realstate:realstate123@postgres:5432/realstate_db
       - JWT_SECRET=realstate-local-secret-key-2024
@@ -81,7 +81,7 @@ GraphQLModule.forRoot<ApolloDriverConfig>({
   driver: ApolloDriver,
   playground: false,
   plugins: [ApolloServerPluginLandingPageLocalDefault()],
-  path: '/realstate',
+  path: '/api/v1/graphql',
   bodyParserConfig: false,
   typePaths: ['./**/*.graphql'],
   cors: {
@@ -183,7 +183,7 @@ docker-compose exec api npx prisma migrate dev
 ### Paso 5: Verificar Funcionamiento
 ```bash
 # Verificar que la API responda
-curl http://localhost:3001/realstate
+curl http://localhost:3002/api/v1/graphql
 
 # Verificar base de datos
 docker-compose exec postgres psql -U realstate -d realstate_db -c "\dt"
@@ -246,10 +246,10 @@ docker-compose exec api npx prisma migrate dev
 # 6. Verificar
 echo "✅ Verificando instalación..."
 docker-compose ps
-curl -f http://localhost:3001/realstate || echo "❌ Error: API no responde"
+curl -f http://localhost:3002/api/v1/graphql || echo "❌ Error: API no responde"
 
 echo "🎉 ¡API RealState configurada!"
-echo "🌐 API: http://localhost:3001/realstate"
+echo "🌐 API: http://localhost:3002/api/v1/graphql"
 ```
 
 ### Script de Backup
@@ -282,7 +282,7 @@ echo "✅ Restauración completada"
 ## 📊 Verificación del Sistema
 
 ### Checklist de Verificación
-- [ ] **API responde**: `curl http://localhost:3001/realstate`
+- [ ] **API responde**: `curl http://localhost:3002/api/v1/graphql`
 - [ ] **Base de datos conectada**: `docker-compose exec postgres psql -U realstate -d realstate_db`
 - [ ] **Datos disponibles**: Verificar que las tablas contengan datos
 - [ ] **Autenticación funciona**: Probar login con usuarios
@@ -293,7 +293,7 @@ echo "✅ Restauración completada"
 ### Comandos de Verificación
 ```bash
 # Verificar API
-curl -X POST http://localhost:3001/realstate \
+curl -X POST http://localhost:3002/api/v1/graphql \
   -H "Content-Type: application/json" \
   -d '{"query": "{ __schema { types { name } } }"}'
 

@@ -78,7 +78,7 @@ echo ""
 # 3. Verificar puertos
 echo "🌐 VERIFICANDO PUERTOS..."
 echo "-------------------------"
-API_PORT=$(grep "API_PORT=" .env 2>/dev/null | cut -d'=' -f2 || echo "3001")
+API_PORT=$(grep "API_PORT=" .env 2>/dev/null | cut -d'=' -f2 || echo "3002")
 DB_PORT=$(grep "DB_PORT=" .env 2>/dev/null | cut -d'=' -f2 || echo "5432")
 
 echo "Puerto API configurado: $API_PORT"
@@ -101,10 +101,10 @@ echo ""
 # 4. Verificar conectividad de la API
 echo "🔌 VERIFICANDO CONECTIVIDAD..."
 echo "------------------------------"
-if curl -s http://localhost:$API_PORT/realstate 2>/dev/null | grep -q "GET query missing\|GraphQL"; then
-    show_status "OK" "API GraphQL responde en http://localhost:$API_PORT/realstate"
+if curl -s http://localhost:$API_PORT/api/v1/graphql 2>/dev/null | grep -q "GET query missing\|GraphQL"; then
+    show_status "OK" "API GraphQL responde en http://localhost:$API_PORT/api/v1/graphql"
 else
-    show_status "ERROR" "API no responde en http://localhost:$API_PORT/realstate"
+    show_status "ERROR" "API no responde en http://localhost:$API_PORT/api/v1/graphql"
 fi
 
 # Verificar health check si existe
@@ -190,7 +190,7 @@ echo ""
 echo "📊 RESUMEN FINAL"
 echo "================"
 API_STATUS="ERROR"
-if curl -s http://localhost:$API_PORT/realstate 2>/dev/null | grep -q "GET query missing\|GraphQL"; then
+if curl -s http://localhost:$API_PORT/api/v1/graphql 2>/dev/null | grep -q "GET query missing\|GraphQL"; then
     API_STATUS="OK"
 fi
 
@@ -198,7 +198,7 @@ if [ "$API_STATUS" = "OK" ]; then
     show_status "OK" "API está funcionando correctamente"
     echo ""
     echo "🌐 URLs disponibles:"
-    echo "   - GraphQL: http://localhost:$API_PORT/realstate"
+    echo "   - GraphQL: http://localhost:$API_PORT/api/v1/graphql"
     echo "   - Health Check: http://localhost:$API_PORT/health-check"
 else
     show_status "ERROR" "API no está funcionando correctamente"
