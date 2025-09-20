@@ -3,6 +3,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
+import { ValidationRule } from 'graphql';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -27,6 +28,94 @@ import { GeneralConfigurationModule } from './resources/general-configuration/ge
 
 import { HomeModule } from './resources/page-home/home.module';
 
+// Funciones auxiliares para validación de queries
+function getQueryDepth(document: any): number {
+  let maxDepth = 0;
+  
+  function calculateDepth(selectionSet: any, depth: number): void {
+    if (!selectionSet || !selectionSet.selections) return;
+    
+    maxDepth = Math.max(maxDepth, depth);
+    
+    for (const selection of selectionSet.selections) {
+      if (selection.kind === 'Field' && selection.selectionSet) {
+        calculateDepth(selection.selectionSet, depth + 1);
+      }
+    }
+  }
+  
+  if (document.definitions) {
+    for (const definition of document.definitions) {
+      if (definition.kind === 'OperationDefinition' && definition.selectionSet) {
+        calculateDepth(definition.selectionSet, 1);
+      }
+    }
+  }
+  
+  return maxDepth;
+}
+
+function getQueryComplexity(document: any): number {
+  let complexity = 0;
+  
+  function calculateComplexity(selectionSet: any, depth: number): void {
+    if (!selectionSet || !selectionSet.selections) return;
+    
+    for (const selection of selectionSet.selections) {
+      if (selection.kind === 'Field') {
+        // Base complexity for each field
+        complexity += 1;
+        
+        // Penalize nested fields
+        if (depth > 0) {
+          complexity += depth * 2;
+        }
+        
+        // Recursively calculate nested fields
+        if (selection.selectionSet) {
+          calculateComplexity(selection.selectionSet, depth + 1);
+        }
+      }
+    }
+  }
+  
+  if (document.definitions) {
+    for (const definition of document.definitions) {
+      if (definition.kind === 'OperationDefinition' && definition.selectionSet) {
+        calculateComplexity(definition.selectionSet, 0);
+      }
+    }
+  }
+  
+  return complexity;
+}
+
+// Reglas de validación de GraphQL simplificadas
+const validationRules: ValidationRule[] = [
+  // Límite de profundidad de query
+  (context: any) => {
+    if (!context.document || !context.document.definitions) {
+      return {};
+    }
+    const depth = getQueryDepth(context.document);
+    if (depth > 10) {
+      throw new Error(`Query depth limit exceeded: ${depth} > 10`);
+    }
+    return {};
+  },
+  // Límite de complejidad de query
+  (context: any) => {
+    if (!context.document || !context.document.definitions) {
+      return {};
+    }
+    const complexity = getQueryComplexity(context.document);
+    if (complexity > 1000) {
+      throw new Error(`Query complexity limit exceeded: ${complexity} > 1000`);
+    }
+    return {};
+  },
+];
+
 @Module({
   imports: [
     PrismaModule,
@@ -34,39 +123,37 @@ import { HomeModule } from './resources/page-home/home.module';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       playground: false,
-      plugins: [ApolloServerPluginLandingPageLocalDefault()],
       path: '/api/v1/graphql',
-      bodyParserConfig: false,
       typePaths: ['./**/*.graphql'],
       introspection: true,
       subscriptions: {
         'graphql-ws': {
-          onConnect: (context) => {
+          onConnect: (_context: any) => {
             console.log('🔌 WebSocket GraphQL conectado');
             return true;
           },
-          onDisconnect: (context, code, reason) => {
+          onDisconnect: (_context: any, _code: any, _reason: any) => {
             console.log('🔌 WebSocket GraphQL desconectado');
           },
         },
       },
-      formatError: (error) => {
+      formatError: (error: any) => {
         console.error('GraphQL Error:', error);
         const graphQLFormattedError = {
           message: error.message,
           code: error.extensions?.code || 'SERVER_ERROR',
           name: error.name,
+          timestamp: new Date().toISOString(),
         };
         return graphQLFormattedError;
       },
-      cors: {
-        origin: true,
-        credentials: true,
-      },
-      // Configuración de timeouts y límites
-      context: ({ req }) => ({ req }),
+      context: ({ req }: { req: any }) => ({ req }),
       cache: 'bounded',
       persistedQueries: false,
+      validationRules,
+      plugins: [
+        ApolloServerPluginLandingPageLocalDefault() as any,
+      ],
     }),
     PropertiesModule,
     AmenitiesModule,

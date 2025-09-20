@@ -1,6 +1,6 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
-import { RolesGuard } from '../../guards';
+import { UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import { RolesGuard, RateLimitGuard, QueryComplexityGuard } from '../../guards';
 import { Roles } from '../../decorators';
 import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { EntrepreneurshipService } from './entrepreneurship.service';
@@ -28,11 +28,50 @@ export class EntrepreneurshipResolver {
     );
   }
 
+  @UseGuards(RateLimitGuard, QueryComplexityGuard)
   @Query('entrepreneurships')
   async findAll(
     @Args('associatedZone') associatedZoneId: string,
   ): Promise<Entrepreneurship[]> {
-    return await this.entrepreneurshipService.findAll(associatedZoneId);
+    try {
+      // Validar input
+      if (associatedZoneId && typeof associatedZoneId !== 'string') {
+        throw new HttpException(
+          {
+            message: 'ID de zona inválido',
+            code: 'INVALID_ZONE_ID',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      // Limpiar y validar el ID de zona
+      const cleanZoneId = associatedZoneId?.trim();
+      if (cleanZoneId === '') {
+        throw new HttpException(
+          {
+            message: 'ID de zona no puede estar vacío',
+            code: 'EMPTY_ZONE_ID',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      return await this.entrepreneurshipService.findAll(cleanZoneId);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      
+      console.error('❌ Error in entrepreneurships query:', error);
+      throw new HttpException(
+        {
+          message: 'Error interno del servidor al obtener emprendimientos',
+          code: 'INTERNAL_SERVER_ERROR',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Query('entrepreneurship')

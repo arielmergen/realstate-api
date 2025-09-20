@@ -56,7 +56,7 @@ async function main() {
   
   const defaultPassword = await bcrypt.hash('realstate123', 10);
 
-  const guestUser = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'guest@realstate.com' },
     update: {},
     create: {
@@ -70,7 +70,7 @@ async function main() {
     }
   });
 
-  const executiveUser = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'executive@realstate.com' },
     update: {},
     create: {
@@ -84,7 +84,7 @@ async function main() {
     }
   });
 
-  const adminUser = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'admin@realstate.com' },
     update: {},
     create: {
@@ -98,7 +98,7 @@ async function main() {
     }
   });
 
-  const ownerUser = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'owner@realstate.com' },
     update: {},
     create: {
@@ -255,11 +255,11 @@ async function main() {
   console.log('🏘️ Creando emprendimientos...');
   
   const entrepreneurships = [
-    { id: 'torres-centro-id', name: 'Torres del Centro', zoneId: createdZones[0].id },
-    { id: 'residencial-norte-id', name: 'Residencial Norte', zoneId: createdZones[1].id },
-    { id: 'complejo-sur-id', name: 'Complejo Sur', zoneId: createdZones[2].id },
-    { id: 'urbanizacion-este-id', name: 'Urbanización Este', zoneId: createdZones[3].id },
-    { id: 'barrio-oeste-id', name: 'Barrio Oeste', zoneId: createdZones[4].id }
+    { id: 'torres-centro-id', name: 'Torres del Centro', zoneId: createdZones[0]?.id || '' },
+    { id: 'residencial-norte-id', name: 'Residencial Norte', zoneId: createdZones[1]?.id || '' },
+    { id: 'complejo-sur-id', name: 'Complejo Sur', zoneId: createdZones[2]?.id || '' },
+    { id: 'urbanizacion-este-id', name: 'Urbanización Este', zoneId: createdZones[3]?.id || '' },
+    { id: 'barrio-oeste-id', name: 'Barrio Oeste', zoneId: createdZones[4]?.id || '' }
   ];
 
   const createdEntrepreneurships = [];
@@ -282,11 +282,11 @@ async function main() {
   console.log('🏘️ Creando barrios...');
   
   const neighborhoods = [
-    { id: 'barrio-centro-id', name: 'Barrio Centro', entrepreneurshipId: createdEntrepreneurships[0].id },
-    { id: 'barrio-norte-id', name: 'Barrio Norte', entrepreneurshipId: createdEntrepreneurships[1].id },
-    { id: 'barrio-sur-id', name: 'Barrio Sur', entrepreneurshipId: createdEntrepreneurships[2].id },
-    { id: 'barrio-este-id', name: 'Barrio Este', entrepreneurshipId: createdEntrepreneurships[3].id },
-    { id: 'barrio-oeste-id', name: 'Barrio Oeste', entrepreneurshipId: createdEntrepreneurships[4].id }
+    { id: 'barrio-centro-id', name: 'Barrio Centro', entrepreneurshipId: createdEntrepreneurships[0]?.id || '' },
+    { id: 'barrio-norte-id', name: 'Barrio Norte', entrepreneurshipId: createdEntrepreneurships[1]?.id || '' },
+    { id: 'barrio-sur-id', name: 'Barrio Sur', entrepreneurshipId: createdEntrepreneurships[2]?.id || '' },
+    { id: 'barrio-este-id', name: 'Barrio Este', entrepreneurshipId: createdEntrepreneurships[3]?.id || '' },
+    { id: 'barrio-oeste-id', name: 'Barrio Oeste', entrepreneurshipId: createdEntrepreneurships[4]?.id || '' }
   ];
 
   for (const neighborhood of neighborhoods) {
@@ -332,7 +332,7 @@ async function main() {
   // 11. CONFIGURACIÓN DEL HOME
   console.log('🏠 Creando configuración del home...');
   
-  const homeConfig = await prisma.homeConfiguration.upsert({
+  await prisma.homeConfiguration.upsert({
     where: { id: 'default-home-config' },
     update: {},
     create: {

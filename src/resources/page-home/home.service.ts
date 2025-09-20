@@ -24,7 +24,7 @@ export class HomeService {
         return this.pages;
     }
 
-    createHome(createHomePageInput: CreateHomePageInput) {
+    createHome(_createHomePageInput: CreateHomePageInput) {
         return []
     }
 }

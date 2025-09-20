@@ -76,9 +76,12 @@ export class GridService {
     });
     if (slidesToDelete.length)
       for (let i = 0; i < slidesToDelete.length; i++) {
-        const imageToDelete = slidesToDelete[i].image;
-        if (imageToDelete?.publicId)
-          await this.imagesService.delete(imageToDelete.publicId);
+        const slide = slidesToDelete[i];
+        if (slide) {
+          const imageToDelete = slide.image;
+          if (imageToDelete?.publicId)
+            await this.imagesService.delete(imageToDelete.publicId);
+        }
       }
 
     const formattedSlides = slides?.map(async ({ image, ...slide }) => ({
@@ -113,9 +116,9 @@ export class GridService {
     const slides = await this.prisma.slide.findMany({
       where: { gridConfigurationId: id },
     });
-    for (let i = 0; slides.length < i; i++) {
+    for (let i = 0; i < slides.length; i++) {
       const slide = slides[i];
-      if (slide.imageId) await this.imagesService.delete(slide.imageId);
+      if (slide && slide.imageId) await this.imagesService.delete(slide.imageId);
     }
 
     return await this.prisma.gridConfiguration.delete({

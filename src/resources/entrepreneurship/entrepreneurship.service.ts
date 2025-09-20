@@ -25,19 +25,38 @@ export class EntrepreneurshipService {
     });
   }
 
-  async findAll(associatedZoneId: string): Promise<Entrepreneurship[]> {
-    return await this.prisma.entrepreneurship.findMany({
-      ...(associatedZoneId && {
-        where: {
-          zone: {
-            id: associatedZoneId,
-          },
+  async findAll(associatedZoneId?: string): Promise<Entrepreneurship[]> {
+    try {
+      const queryOptions: any = {
+        include: {
+          zone: true,
         },
-      }),
-      include: {
-        zone: true,
-      },
-    });
+        // Agregar límite para prevenir consultas masivas
+        take: 100,
+        orderBy: {
+          name: 'asc',
+        },
+      };
+
+      // Solo agregar filtro de zona si se proporciona un ID válido
+      if (associatedZoneId && associatedZoneId.trim() !== '') {
+        queryOptions.where = {
+          zone: {
+            id: associatedZoneId.trim(),
+          },
+        };
+      }
+
+      const result = await this.prisma.entrepreneurship.findMany(queryOptions);
+      
+      // Log para monitoreo
+      console.log(`📊 Entrepreneurship query executed: ${result.length} results${associatedZoneId ? ` for zone ${associatedZoneId}` : ''}`);
+      
+      return result;
+    } catch (error) {
+      console.error('❌ Database error in findAll entrepreneurships:', error);
+      throw new Error(`Error al obtener emprendimientos: ${error.message}`);
+    }
   }
 
   async findOne(id: string): Promise<Entrepreneurship | null> {

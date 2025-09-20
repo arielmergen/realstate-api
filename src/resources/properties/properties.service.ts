@@ -10,7 +10,6 @@ import {
   Image,
 } from '../../entities';
 import { ImagesService } from '../images/images.service';
-import { OwnerService } from '../owner/owner.service';
 
 @Injectable()
 export class PropertiesService {
@@ -33,7 +32,6 @@ export class PropertiesService {
   constructor(
     private prisma: PrismaService,
     private imagesService: ImagesService,
-    private ownersService: OwnerService,
   ) {}
 
   async create({
@@ -52,11 +50,15 @@ export class PropertiesService {
   }: PropertyInput): Promise<Property> {
     let _images: Image[] = [];
     if (images?.length)
-      for (let i = 0; images.length > i; i++)
-        _images = [
-          ..._images,
-          await this.imagesService.create(images[i], '/properties'),
-        ];
+      for (let i = 0; images.length > i; i++) {
+        const image = images[i];
+        if (image) {
+          _images = [
+            ..._images,
+            await this.imagesService.create(image, '/properties'),
+          ];
+        }
+      }
 
     const createdProperty = await this.prisma.property.create({
       data: {
@@ -527,6 +529,17 @@ export class PropertiesService {
       const lastProperty = allProperties[allProperties.length - 1];
       const myCursor = lastProperty?.id;
 
+      if (!myCursor) {
+        return {
+          totalCount: propertiesLength,
+          pageInfo: {
+            endCursor: null,
+            hasNextPage: false,
+          },
+          edges: [],
+        };
+      }
+
       const nextProperties = await this.prisma.property.findMany({
         take: first,
         cursor: {
@@ -654,15 +667,23 @@ export class PropertiesService {
     let _images: Image[] = [];
 
     if (images?.length)
-      for (let i = 0; images.length > i; i++)
-        _images = [
-          ..._images,
-          await this.imagesService.create(images[i], '/properties'),
-        ];
+      for (let i = 0; images.length > i; i++) {
+        const image = images[i];
+        if (image) {
+          _images = [
+            ..._images,
+            await this.imagesService.create(image, '/properties'),
+          ];
+        }
+      }
 
     if (oldImages?.length)
-      for (let i = 0; oldImages.length > i; i++)
-        await this.imagesService.delete(oldImages[i].publicId);
+      for (let i = 0; oldImages.length > i; i++) {
+        const oldImage = oldImages[i];
+        if (oldImage) {
+          await this.imagesService.delete(oldImage.publicId);
+        }
+      }
 
     console.info(owner);
 
@@ -754,8 +775,12 @@ export class PropertiesService {
       include: this.include,
     });
     const images = deletedProperty.images;
-    for (let i = 0; i < images.length; i++)
-      await this.imagesService.delete(images[i].publicId);
+    for (let i = 0; i < images.length; i++) {
+      const image = images[i];
+      if (image) {
+        await this.imagesService.delete(image.publicId);
+      }
+    }
 
     const {
       createdBy: { password: _, pictureId: _3, refreshToken: _4, ...createdBy },

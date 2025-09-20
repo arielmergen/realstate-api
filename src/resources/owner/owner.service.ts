@@ -9,7 +9,7 @@ export class OwnerService {
 
   async create(createOwnerInput: OwnerInput): Promise<Owner> {
     return await this.prisma.owner.create({
-      data: { properties: undefined, ...createOwnerInput },
+      data: createOwnerInput,
     });
   }
 

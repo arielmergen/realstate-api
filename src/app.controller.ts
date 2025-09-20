@@ -10,8 +10,8 @@ export class AppController {
   }
 
   @Get('health-check')
-  getHealthCheck() {
-    return this.appService.getHealthStatus();
+  async getHealthCheck() {
+    return await this.appService.getHealthStatus();
   }
 
   @Get('metrics')

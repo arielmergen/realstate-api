@@ -281,13 +281,19 @@ export class FeaturesService {
       deletedGrid = await this.gridService.delete(deletedFeature.grid.id);
     if (deletedSlider?.slides)
       for (let i = 0; i < deletedSlider.slides.length; i++) {
-        const image = deletedSlider.slides[i].image;
-        if (image) await this.imagesService.delete(image.publicId);
+        const slide = deletedSlider.slides[i];
+        if (slide) {
+          const image = slide.image;
+          if (image) await this.imagesService.delete(image.publicId);
+        }
       }
     if (deletedGrid?.slides)
       for (let i = 0; i < deletedGrid.slides.length; i++) {
-        const image = deletedGrid.slides[i].image;
-        if (image) await this.imagesService.delete(image.publicId);
+        const slide = deletedGrid.slides[i];
+        if (slide) {
+          const image = slide.image;
+          if (image) await this.imagesService.delete(image.publicId);
+        }
       }
 
     return deletedFeature;

@@ -46,7 +46,7 @@ services:
     ports:
       - "3002:5000"
     environment:
-      - DATABASE_URL=postgresql://realstate:realstate123@postgres:5432/realstate_db?connection_limit=30&pool_timeout=60&idle_timeout=600&connect_timeout=10
+      - DATABASE_URL=postgresql://realstate:realstate123@postgres:5432/realstate_db?connection_limit=50&pool_timeout=60&idle_timeout=30000&connect_timeout=10000&statement_timeout=30000&query_timeout=30000
       - JWT_SECRET=realstate-local-secret-key-2024
       - TOKEN_VALIDITY_TIME=24
       - TOKEN_VALIDITY_UNITS=h
@@ -65,6 +65,10 @@ services:
       # Keep-alive settings
       - HTTP_KEEP_ALIVE_TIMEOUT=65000
       - HTTP_HEADERS_TIMEOUT=66000
+      # Rate limiting settings
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX=1000
+      - RATE_LIMIT_STRICT_MAX=60
     depends_on:
       postgres:
         condition: service_healthy
@@ -77,15 +81,15 @@ services:
       - real-estate-network
     # Comando simplificado
     command: npm run start:dev
-    # Política de reinicio más controlada
-    restart: on-failure:3
-    # Health check optimizado
+    # Política de reinicio más agresiva
+    restart: always
+    # Health check menos agresivo
     healthcheck:
-      test: ["CMD", "curl", "-f", "--max-time", "5", "http://localhost:5000/health-check"]
-      interval: 20s
-      timeout: 8s
-      retries: 3
-      start_period: 60s
+      test: ["CMD", "curl", "-f", "--max-time", "3", "--connect-timeout", "2", "http://localhost:5000/health-check"]
+      interval: 45s
+      timeout: 10s
+      retries: 2
+      start_period: 90s
     deploy:
       resources:
         limits:
