@@ -49,13 +49,26 @@ chmod +x setup-local.sh
 - **Tipos de propiedades** (Casa, Depto, Oficina, etc.)
 - **Estructura geográfica** (Zonas, Emprendimientos, Barrios)
 - **Propietarios** y gestión de contactos
-- **Imágenes** con Cloudinary integration
+- **Gestión completa de imágenes** con Cloudinary integration
+  - Subida individual y múltiple de imágenes
+  - Reordenamiento de imágenes
+  - Eliminación segura
+  - Organización por propiedades
 
 ### **📊 Datos Iniciales**
 - **57+ registros** creados automáticamente
 - **Configuración completa** de la empresa
 - **Catálogos base** para todas las funcionalidades
 - **Estructura geográfica** lista para usar
+
+### **🖼️ Gestión de Imágenes (Nueva Feature)**
+- **Subida individual y múltiple** de imágenes
+- **Reordenamiento** de imágenes por drag & drop
+- **Eliminación segura** con limpieza automática
+- **Organización por propiedades** con carpetas automáticas
+- **Optimización automática** con Cloudinary
+- **CDN global** para carga rápida
+- **API GraphQL completa** para todas las operaciones
 
 ## 🛠️ **Tecnologías**
 
@@ -81,8 +94,11 @@ chmod +x setup-local.sh
 | **typescript** | 4.x | 5.3.2 | Mejoras de tipado y rendimiento |
 | **apollo-server-express** | 3.x | 3.12.1 | Correcciones de compatibilidad |
 
-### 🔄 **Últimas Actualizaciones (Septiembre 2025)**
+### 🔄 **Últimas Actualizaciones (Diciembre 2024)**
 
+- ✅ **Sistema completo de gestión de imágenes** - Subida, reordenamiento y eliminación
+- ✅ **Integración GraphQL para imágenes** - API consistente con el ecosistema
+- ✅ **Cloudinary optimizado** - Almacenamiento y CDN automático
 - ✅ **NestJS actualizado a v10** - Mejoras de rendimiento y nuevas características
 - ✅ **Prisma actualizado a v5** - Mejor rendimiento y nuevas funcionalidades
 - ✅ **TypeScript actualizado a v5.3.2** - Mejoras de tipado y rendimiento
@@ -95,6 +111,7 @@ chmod +x setup-local.sh
 
 | **Área** | **Mejora** | **Beneficio** |
 |-----------|------------|---------------|
+| **Gestión de Imágenes** | Cloudinary + GraphQL | Subida optimizada y CDN global |
 | **Compilación** | TypeScript 5.3.2 | 40% más rápido en compilación |
 | **Base de Datos** | Prisma 5.7.1 | Mejor gestión de conexiones |
 | **API GraphQL** | Apollo 12.0.11 | Mejor validación y rendimiento |
@@ -176,6 +193,63 @@ docker-compose down
 - **[Plan de Implementación](./documents/plan-implementacion-local.md)** - Documentación técnica
 - **[Informe Técnico](./documents/informe-tecnico-realstate-api.md)** - Análisis completo
 - **[Guía de Configuración](./documents/guia-configuracion-realstate.md)** - Configuración avanzada
+
+### 🖼️ **API de Imágenes - GraphQL**
+
+#### **Mutations Disponibles:**
+```graphql
+# Crear imagen individual
+createImage(imageInput: CreateImageInput!): Image!
+
+# Crear múltiples imágenes
+createMultipleImages(imagesInput: CreateMultipleImagesInput!): [Image]!
+
+# Reordenar imágenes
+reorderImages(reorderInput: ReorderImagesInput!): [Image]!
+
+# Eliminar imagen
+deleteImage(publicId: ID!): Image
+```
+
+#### **Queries Disponibles:**
+```graphql
+# Obtener todas las imágenes
+images: [Image]!
+
+# Obtener imagen por ID
+image(id: ID!): Image
+
+# Obtener imágenes de una propiedad
+imagesByProperty(propertyId: ID!): [Image]!
+```
+
+#### **Ejemplo de Uso:**
+```typescript
+// Subir múltiples imágenes
+const mutation = `
+  mutation CreateMultipleImages($imagesInput: CreateMultipleImagesInput!) {
+    createMultipleImages(imagesInput: $imagesInput) {
+      id
+      src
+      order
+      isHighlighted
+    }
+  }
+`;
+
+const variables = {
+  imagesInput: {
+    propertyId: "property-123",
+    images: [
+      {
+        base64Image: "data:image/jpeg;base64,/9j/4AAQ...",
+        order: 1,
+        isHighlighted: true
+      }
+    ]
+  }
+};
+```
 
 ## 👥 **Usuarios de Prueba**
 

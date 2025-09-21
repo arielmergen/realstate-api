@@ -5,6 +5,7 @@ type Image {
   publicId: String!
   src: String
   order: Int
+  propertyId: String
 }
 
 input CreateImageInput {
@@ -12,6 +13,12 @@ input CreateImageInput {
   base64Image: String!
   isHighlighted: Boolean
   order: Int
+  propertyId: String
+}
+
+input CreateMultipleImagesInput {
+  images: [CreateImageInput!]!
+  propertyId: String
 }
 
 input ImageInput {
@@ -21,14 +28,27 @@ input ImageInput {
   publicId: String!
   src: String!
   order: Int
+  propertyId: String
+}
+
+input UpdateImageOrderInput {
+  imageId: ID!
+  order: Int!
+}
+
+input ReorderImagesInput {
+  images: [UpdateImageOrderInput!]!
 }
 
 type Query {
   images: [Image]!
-  image(id: Int!): Image
+  image(id: ID!): Image
+  imagesByProperty(propertyId: ID!): [Image]!
 }
 
 type Mutation {
   createImage(imageInput: CreateImageInput!): Image!
+  createMultipleImages(imagesInput: CreateMultipleImagesInput!): [Image]!
+  reorderImages(reorderInput: ReorderImagesInput!): [Image]!
   deleteImage(publicId: ID!): Image
 }

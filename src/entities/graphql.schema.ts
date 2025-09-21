@@ -182,6 +182,12 @@ export class CreateImageInput {
     base64Image: string;
     isHighlighted?: Nullable<boolean>;
     order?: Nullable<number>;
+    propertyId?: Nullable<string>;
+}
+
+export class CreateMultipleImagesInput {
+    images: CreateImageInput[];
+    propertyId?: Nullable<string>;
 }
 
 export class ImageInput {
@@ -191,6 +197,16 @@ export class ImageInput {
     publicId: string;
     src: string;
     order?: Nullable<number>;
+    propertyId?: Nullable<string>;
+}
+
+export class UpdateImageOrderInput {
+    imageId: string;
+    order: number;
+}
+
+export class ReorderImagesInput {
+    images: UpdateImageOrderInput[];
 }
 
 export class NeighborhoodInput {
@@ -434,7 +450,9 @@ export abstract class IQuery {
 
     abstract images(): Nullable<Image>[] | Promise<Nullable<Image>[]>;
 
-    abstract image(id: number): Nullable<Image> | Promise<Nullable<Image>>;
+    abstract image(id: string): Nullable<Image> | Promise<Nullable<Image>>;
+
+    abstract imagesByProperty(propertyId: string): Nullable<Image>[] | Promise<Nullable<Image>[]>;
 
     abstract neighborhoods(associatedEntrepreneurship?: Nullable<string>): Nullable<Neighborhood>[] | Promise<Nullable<Neighborhood>[]>;
 
@@ -535,6 +553,10 @@ export abstract class IMutation {
     abstract deleteHomeConfiguration(id: string): Nullable<HomeConfiguration> | Promise<Nullable<HomeConfiguration>>;
 
     abstract createImage(imageInput: CreateImageInput): Image | Promise<Image>;
+
+    abstract createMultipleImages(imagesInput: CreateMultipleImagesInput): Nullable<Image>[] | Promise<Nullable<Image>[]>;
+
+    abstract reorderImages(reorderInput: ReorderImagesInput): Nullable<Image>[] | Promise<Nullable<Image>[]>;
 
     abstract deleteImage(publicId: string): Nullable<Image> | Promise<Nullable<Image>>;
 
@@ -696,6 +718,7 @@ export class Image {
     publicId: string;
     src?: Nullable<string>;
     order?: Nullable<number>;
+    propertyId?: Nullable<string>;
 }
 
 export class Neighborhood {
