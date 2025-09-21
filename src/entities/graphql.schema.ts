@@ -718,7 +718,7 @@ export class Image {
     publicId: string;
     src?: Nullable<string>;
     order?: Nullable<number>;
-    propertyId?: Nullable<string>;
+    properties?: Nullable<Nullable<Property>[]>;
 }
 
 export class Neighborhood {

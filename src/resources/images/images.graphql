@@ -5,7 +5,7 @@ type Image {
   publicId: String!
   src: String
   order: Int
-  propertyId: String
+  properties: [Property]
 }
 
 input CreateImageInput {

@@ -11,20 +11,30 @@ export class ImagesService {
   ) {}
 
   async create(
-    { base64Image, ...createImageInput }: CreateImageInput,
+    { base64Image, propertyId, ...createImageInput }: CreateImageInput,
     folder?: string,
   ): Promise<Image> {
     const _image = await this.cloudinary.create(base64Image, folder);
+    
+    const imageData: any = {
+      ...createImageInput,
+      publicId: _image.public_id,
+      src: _image.secure_url,
+    };
+
+    // Si hay propertyId, conectar con la propiedad
+    if (propertyId) {
+      imageData.properties = {
+        connect: { id: propertyId }
+      };
+    }
+
     const {
       highlightedImageId: _1,
       secondaryImageId: _2,
       ...image
     } = await this.prisma.image.create({
-      data: {
-        ...createImageInput,
-        publicId: _image.public_id,
-        src: _image.secure_url,
-      },
+      data: imageData,
     });
 
     return image;
