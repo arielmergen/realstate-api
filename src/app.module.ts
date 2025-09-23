@@ -4,6 +4,8 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 import { ValidationRule } from 'graphql';
+import { APP_FILTER } from '@nestjs/core';
+import { CloudinaryExceptionFilter } from './filters/cloudinary-exception.filter';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -175,6 +177,12 @@ const validationRules: ValidationRule[] = [
     HomeModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: CloudinaryExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}

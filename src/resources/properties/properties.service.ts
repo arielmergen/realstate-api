@@ -16,7 +16,16 @@ export class PropertiesService {
   private include = {
     amenities: true,
     services: true,
-    images: true,
+    images: {
+      orderBy: [
+        {
+          isHighlighted: 'desc' as const, // Imágenes destacadas primero
+        },
+        {
+          order: 'asc' as const, // Luego por orden
+        },
+      ],
+    },
     type: true,
     geoCity: true,
     geoZone: true,
@@ -634,6 +643,45 @@ export class PropertiesService {
     const foundProperty = await this.prisma.property.findUnique({
       where: { id },
       include: this.include,
+    });
+
+    if (!foundProperty) return foundProperty;
+
+    const {
+      createdBy: { password: _, pictureId: _3, refreshToken: _4, ...createdBy },
+      ...cuttedFoundProperty
+    } = foundProperty;
+
+    return { ...cuttedFoundProperty, createdBy };
+  }
+
+  async findOneWithOrderedImages(id: string): Promise<Property | null> {
+    const foundProperty = await this.prisma.property.findUnique({
+      where: { id },
+      include: {
+        amenities: true,
+        services: true,
+        images: {
+          orderBy: [
+            {
+              isHighlighted: 'desc' as const, // Imágenes destacadas primero
+            },
+            {
+              order: 'asc' as const, // Luego por orden
+            },
+          ],
+        },
+        type: true,
+        geoCity: true,
+        geoZone: true,
+        geoLocation: true,
+        owner: true,
+        createdBy: {
+          include: {
+            role: true,
+          },
+        },
+      },
     });
 
     if (!foundProperty) return foundProperty;

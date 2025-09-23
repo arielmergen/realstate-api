@@ -39,6 +39,11 @@ export class PropertiesResolver {
     return await this.propertiesService.findOne(id);
   }
 
+  @Query('propertyWithOrderedImages')
+  async findOneWithOrderedImages(@Args('id') id: string): Promise<Property | null> {
+    return await this.propertiesService.findOneWithOrderedImages(id);
+  }
+
   @Roles(RolesName.Executive, RolesName.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Mutation('updateProperty')

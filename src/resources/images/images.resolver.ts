@@ -22,6 +22,8 @@ export class ImagesResolver {
   async create(
     @Args('imageInput') createImageInput: CreateImageInput,
   ): Promise<Image> {
+    // El servicio ya maneja automáticamente la lógica de desmarcar otras imágenes destacadas
+    // No necesitamos validar aquí, solo permitir la creación
     return await this.imageService.create(createImageInput);
   }
 
@@ -63,5 +65,34 @@ export class ImagesResolver {
   @Mutation('deleteImage')
   async delete(@Args('publicId') publicId: string): Promise<Image> {
     return await this.imageService.delete(publicId);
+  }
+
+  @Roles(RolesName.Executive, RolesName.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Mutation('connectImageToProperty')
+  async connectToProperty(
+    @Args('imageId') imageId: string,
+    @Args('propertyId') propertyId: string,
+  ): Promise<Image> {
+    return await this.imageService.connectToProperty(imageId, propertyId);
+  }
+
+  @Roles(RolesName.Executive, RolesName.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Mutation('setHighlightedImage')
+  async setHighlightedImage(
+    @Args('imageId') imageId: string,
+    @Args('propertyId') propertyId: string,
+  ): Promise<Image> {
+    return await this.imageService.setHighlightedImage(imageId, propertyId);
+  }
+
+  @Roles(RolesName.Executive, RolesName.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Mutation('cleanupOrphanedImages')
+  async cleanupOrphanedImages(
+    @Args('propertyId') propertyId: string,
+  ): Promise<boolean> {
+    return await this.imageService.cleanupOrphanedImages(propertyId);
   }
 }

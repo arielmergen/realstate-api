@@ -280,7 +280,7 @@ export class PropertyInput {
     isDirectionHidden?: Nullable<boolean>;
     isEntrepreneurship?: Nullable<boolean>;
     isHighlighted?: Nullable<boolean>;
-    isOcuppied?: Nullable<boolean>;
+    isOccupied?: Nullable<boolean>;
     isProfessionalAvaiable?: Nullable<boolean>;
     isPublicPrice?: Nullable<boolean>;
     lat?: Nullable<number>;
@@ -560,6 +560,8 @@ export abstract class IMutation {
 
     abstract deleteImage(publicId: string): Nullable<Image> | Promise<Nullable<Image>>;
 
+    abstract connectImageToProperty(imageId: string, propertyId: string): Image | Promise<Image>;
+
     abstract createNeighborhood(neighborhoodInput: NeighborhoodInput): Neighborhood | Promise<Neighborhood>;
 
     abstract updateNeighborhood(id: string, neighborhoodInput: NeighborhoodInput): Neighborhood | Promise<Neighborhood>;
@@ -806,7 +808,7 @@ export class Property {
     isDirectionHidden?: Nullable<boolean>;
     isEntrepreneurship?: Nullable<boolean>;
     isHighlighted?: Nullable<boolean>;
-    isOcuppied?: Nullable<boolean>;
+    isOccupied?: Nullable<boolean>;
     isProfessionalAvaiable?: Nullable<boolean>;
     isPublicPrice?: Nullable<boolean>;
     isReplicated?: Nullable<boolean>;

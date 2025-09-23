@@ -51,4 +51,7 @@ type Mutation {
   createMultipleImages(imagesInput: CreateMultipleImagesInput!): [Image]!
   reorderImages(reorderInput: ReorderImagesInput!): [Image]!
   deleteImage(publicId: ID!): Image
+  connectImageToProperty(imageId: ID!, propertyId: ID!): Image!
+  setHighlightedImage(imageId: ID!, propertyId: ID!): Image!
+  cleanupOrphanedImages(propertyId: ID!): Boolean!
 }
